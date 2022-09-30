@@ -13,6 +13,7 @@ import argparse
 from collections import OrderedDict
 import numpy as np
 import torch
+import wandb
 
 from src.utils import bool_flag, initialize_exp
 from src.models import build_model
@@ -20,7 +21,7 @@ from src.trainer import Trainer
 from src.evaluation import Evaluator
 
 
-VALIDATION_METRIC = 'mean_cosine-csls_knn_10-S2T-10000'
+VALIDATION_METRIC = 'mean_cosine-csls_knn_100-S2T-10000'
 
 
 # main
@@ -64,7 +65,7 @@ parser.add_argument("--lr_shrink", type=float, default=0.5, help="Shrink the lea
 parser.add_argument("--n_refinement", type=int, default=5, help="Number of refinement iterations (0 to disable the refinement procedure)")
 # dictionary creation parameters (for refinement)
 parser.add_argument("--dico_eval", type=str, default="default", help="Path to evaluation dictionary")
-parser.add_argument("--dico_method", type=str, default='csls_knn_10', help="Method used for dictionary generation (nn/invsm_beta_30/csls_knn_10)")
+parser.add_argument("--dico_method", type=str, default='csls_knn_100', help="Method used for dictionary generation (nn/invsm_beta_30/csls_knn_10)")
 parser.add_argument("--dico_build", type=str, default='S2T', help="S2T,T2S,S2T|T2S,S2T&T2S")
 parser.add_argument("--dico_threshold", type=float, default=0, help="Threshold confidence for dictionary generation")
 parser.add_argument("--dico_max_rank", type=int, default=15000, help="Maximum dictionary words rank (0 to disable)")
@@ -74,6 +75,8 @@ parser.add_argument("--dico_max_size", type=int, default=0, help="Maximum genera
 parser.add_argument("--src_emb", type=str, default="", help="Reload source embeddings")
 parser.add_argument("--tgt_emb", type=str, default="", help="Reload target embeddings")
 parser.add_argument("--normalize_embeddings", type=str, default="", help="Normalize embeddings before training")
+parser.add_argument("--load_optim", type=bool_flag, default=True, help="Reload optimal")
+parser.add_argument("--offset", type=str, default='0.0', help="shift percentage")
 
 
 # parse parameters
@@ -122,7 +125,7 @@ if params.adversarial:
             n_words_proc += trainer.mapping_step(stats)
 
             # log stats
-            if n_iter % 500 == 0:
+            if n_iter % 256000 == 0:
                 stats_str = [('DIS_COSTS', 'Discriminator loss')]
                 stats_log = ['%s: %.4f' % (v, np.mean(stats[k]))
                              for k, v in stats_str if len(stats[k]) > 0]

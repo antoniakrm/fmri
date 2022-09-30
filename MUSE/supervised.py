@@ -17,8 +17,8 @@ from src.trainer import Trainer
 from src.evaluation import Evaluator
 
 
-VALIDATION_METRIC_SUP = 'precision_at_1-csls_knn_10'
-VALIDATION_METRIC_UNSUP = 'mean_cosine-csls_knn_10-S2T-10000'
+VALIDATION_METRIC_SUP = 'precision_at_1-csls_knn_100'
+VALIDATION_METRIC_UNSUP = 'mean_cosine-csls_knn_100-S2T-10000'
 
 
 # main
@@ -41,7 +41,7 @@ parser.add_argument("--n_refinement", type=int, default=5, help="Number of refin
 # dictionary creation parameters (for refinement)
 parser.add_argument("--dico_train", type=str, default="default", help="Path to training dictionary (default: use identical character strings)")
 parser.add_argument("--dico_eval", type=str, default="default", help="Path to evaluation dictionary")
-parser.add_argument("--dico_method", type=str, default='csls_knn_10', help="Method used for dictionary generation (nn/invsm_beta_30/csls_knn_10)")
+parser.add_argument("--dico_method", type=str, default='csls_knn_100', help="Method used for dictionary generation (nn/invsm_beta_30/csls_knn_10)")
 parser.add_argument("--dico_build", type=str, default='S2T&T2S', help="S2T,T2S,S2T|T2S,S2T&T2S")
 parser.add_argument("--dico_threshold", type=float, default=0, help="Threshold confidence for dictionary generation")
 parser.add_argument("--dico_max_rank", type=int, default=10000, help="Maximum dictionary words rank (0 to disable)")
@@ -51,7 +51,7 @@ parser.add_argument("--dico_max_size", type=int, default=0, help="Maximum genera
 parser.add_argument("--src_emb", type=str, default='', help="Reload source embeddings")
 parser.add_argument("--tgt_emb", type=str, default='', help="Reload target embeddings")
 parser.add_argument("--normalize_embeddings", type=str, default="", help="Normalize embeddings before training")
-
+parser.add_argument("--load_optim", type=bool_flag, default=False, help="Reload optimal")
 
 # parse parameters
 params = parser.parse_args()

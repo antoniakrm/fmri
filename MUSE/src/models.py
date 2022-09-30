@@ -39,7 +39,7 @@ class Discriminator(nn.Module):
         return self.layers(x).view(-1)
 
 
-def build_model(params, with_dis, logger):
+def build_model(params, with_dis, logger=None):
     """
     Build all components of the model.
     """
@@ -62,15 +62,18 @@ def build_model(params, with_dis, logger):
     mapping = nn.Linear(params.emb_dim, params.emb_dim, bias=False)
     if getattr(params, 'map_id_init', True):
         mapping.weight.data.copy_(torch.diag(torch.ones(params.emb_dim)))
-    if params.adversarial == True and not getattr(params, 'map_id_init', False) and params.load_optim == True:
-        path = os.path.join(os.path.expanduser('~/Dir/projects/IPLVE/data/best_mapping'), \
-            f'seed_{params.seed}_best_mapping_{params.src_lang}_{params.tgt_lang}.pth')
+    if getattr(params, 'adversarial', True) and not getattr(params, 'map_id_init', False) and getattr(params, 'load_optim', True):
+        # path = os.path.join(os.path.expanduser('~/Dir/projects/IPLVE/data/best_mapping'), \
+        #     f'seed_{params.seed}_best_mapping_{params.src_lang}_{params.tgt_lang}.pth')
+        path = os.path.join(os.path.expanduser(f'~/Dir/projects/IPLVE/data/unsup_best_mapping/Random_seed_{params.seed}'), \
+            f'offset_mapping_{params.offset}.pth')
         logger.info('* Reloading the best model from %s ...' % path)
         # reload the model
         assert os.path.isfile(path)
         to_reload = torch.from_numpy(torch.load(path))
         assert to_reload.size() == mapping.weight.data.size()
-        mapping.weight.copy_(to_reload.type_as(mapping.weight))
+        with torch.no_grad():
+            mapping.weight.copy_(to_reload.type_as(mapping.weight))
         
 
     # discriminator

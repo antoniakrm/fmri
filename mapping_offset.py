@@ -19,6 +19,7 @@ if not os.path.exists(dir_root):
     os.mkdir(dir_root)
 
 emb_dim = 2048
+# Resnet152, OPT30B-Reduced-2048
 default_mapping = nn.Linear(emb_dim, emb_dim, bias=False)
 
 torch.save(default_mapping.weight.data.cpu().numpy(), os.path.join(dir_root,f'random_init_{params.seed}.pth'))
@@ -30,6 +31,7 @@ optim_mapping_shift = nn.Linear(emb_dim, emb_dim, bias=False)
 # print(default_mapping.weight.data.cpu().numpy())
 
 # optim_path = os.path.join(dir_root, f'Random_seed_{params.seed}.pth')
+# optim_path seed is 28, since seed28 is the highest one.
 optim_path = os.path.expanduser('~/Dir/projects/summer_intern/data/unsup_best_mapping/offset_mapping_0.0.pth')
 assert os.path.isfile(optim_path)
 to_reload = torch.from_numpy(torch.load(optim_path))

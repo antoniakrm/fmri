@@ -69,13 +69,14 @@ class Trainer(object):
         with torch.no_grad():
             src_emb = self.src_emb(src_ids)
             tgt_emb = self.tgt_emb(tgt_ids)
+        
         if volatile == True:
             with torch.no_grad():
                 src_emb = self.mapping(src_emb)
                 tgt_emb = tgt_emb
         else:
             src_emb = self.mapping(src_emb)
-            tgt_emb = self.tgt
+            tgt_emb = tgt_emb
         # src_emb = self.src_emb(Variable(src_ids, volatile=True))
         # tgt_emb = self.tgt_emb(Variable(tgt_ids, volatile=True))
         # src_emb = self.mapping(Variable(src_emb.data, volatile=volatile))
@@ -234,6 +235,8 @@ class Trainer(object):
             # save the mapping
             W = self.mapping.weight.data.cpu().numpy()
             path = os.path.join(self.params.exp_path, 'best_mapping.pth')
+            # path = os.path.join(os.path.expanduser('~/Dir/projects/IPLVE/data/best_mapping'), \
+            #     f'seed_{self.params.seed}_best_mapping_{self.params.src_lang}_{self.params.tgt_lang}.pth')
             logger.info('* Saving the mapping to %s ...' % path)
             torch.save(W, path)
 

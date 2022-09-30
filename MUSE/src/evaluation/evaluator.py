@@ -113,7 +113,8 @@ class Evaluator(object):
         src_emb = self.mapping(self.src_emb.weight).data
         tgt_emb = self.tgt_emb.weight.data
 
-        for method in ['nn', 'csls_knn_10']:
+        # for method in ['nn', 'csls_knn_10']:
+        for method in ['nn', 'csls_knn_100']:
             results = get_word_translation_accuracy(
                 self.src_dico.lang, self.src_dico.word2id, src_emb,
                 self.tgt_dico.lang, self.tgt_dico.word2id, tgt_emb,
@@ -185,7 +186,7 @@ class Evaluator(object):
         tgt_emb = tgt_emb / tgt_emb.norm(2, 1, keepdim=True).expand_as(tgt_emb)
 
         # build dictionary
-        for dico_method in ['nn', 'csls_knn_10']:
+        for dico_method in ['nn', 'csls_knn_100']:
             dico_build = 'S2T'
             dico_max_size = 10000
             # temp params / dictionary generation

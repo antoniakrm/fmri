@@ -215,7 +215,11 @@ def get_optimizer(s):
         raise Exception('Unknown optimization method: "%s"' % method)
 
     # check that we give good parameters to the optimizer
-    expected_args = inspect.getargspec(optim_fn.__init__)[0]
+    # expected_args = inspect.getargspec(optim_fn.__init__)[0]
+    # expected_args = inspect.getfullargspec(optim_fn.__init__)[0]
+    # print(expected_args)
+    expected_args = list(inspect.signature(optim_fn.__init__).parameters.keys())
+    # print(expected_args)
     assert expected_args[:2] == ['self', 'params']
     if not all(k in expected_args[2:] for k in optim_params.keys()):
         raise Exception('Unexpected parameters: expected "%s", got "%s"' % (
@@ -301,7 +305,8 @@ def read_txt_embeddings(params, source, full_vocab):
                 break
 
     assert len(word2id) == len(vectors)
-    logger.info("Loaded %i pre-trained word embeddings." % len(vectors))
+    # logger.info("Loaded %i pre-trained word embeddings." % len(vectors))
+    logger.info(f"Loaded {len(vectors)} pre-trained {lang} embeddings.")
 
     # compute new vocabulary / embeddings
     id2word = {v: k for k, v in word2id.items()}
