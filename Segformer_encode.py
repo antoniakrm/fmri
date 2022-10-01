@@ -85,7 +85,9 @@ def segformer_encode(model, dataloader, encoding_path, image_classes_path):
 
         for idx, chip in enumerate(chunks):
             features = np.mean(chip[:category_size[idx]].numpy(), axis=(2,3), keepdims=True).squeeze()
-            features_exp = np.expand_dims(features, 0)
+            features_exp = np.expand_dims(features.mean(axis=0), 0)
+            # print(features.shape)
+            # print(features_exp.shape)
             image_categories.append(names[idx])
             encode_image_classes.append(features_exp)
 
