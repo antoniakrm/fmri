@@ -14,7 +14,7 @@ import torchvision
 # from sklearn.decomposition import PCA
 
 class ImageDataset(Dataset):
-    def __init__(self, image_dir, image_category_id, extractor) -> None:
+    def __init__(self, image_dir, image_category_id, extractor, resolution) -> None:
         super(ImageDataset, self).__init__()
         self.image_root = image_dir
         self.id_name_pairs = open(image_category_id).readlines()
@@ -22,8 +22,8 @@ class ImageDataset(Dataset):
         self.names = [i.strip('\n').split(': ')[1] for i in self.id_name_pairs]
         self.extractor = extractor
         self.MAX_SIZE = 200
-        self.RESOLUTION_HEIGHT = 512
-        self.RESOLUTION_WIDTH = 512
+        self.RESOLUTION_HEIGHT = resolution
+        self.RESOLUTION_WIDTH = resolution
         self.CHANNELS = 3
 
     def __len__(self):
@@ -126,7 +126,8 @@ def main():
         cache_dir=os.path.expanduser(f"~/.cache/huggingface/transformers/models/{args.model_name}"), \
         output_hidden_states=True, return_dict=True)
     
-    imageset = ImageDataset(image_dir=os.path.expanduser(args.image_dir), image_category_id=args.image_classes_id, extractor=feature_extractor)
+    Resolution = int(args.model_name[-3:])
+    imageset = ImageDataset(image_dir=os.path.expanduser(args.image_dir), image_category_id=args.image_classes_id, extractor=feature_extractor, resolution=Resolution)
     batch_size = 1
     image_dataloader = torch.utils.data.DataLoader(imageset, batch_size=batch_size, num_workers=8, pin_memory=True)
 
