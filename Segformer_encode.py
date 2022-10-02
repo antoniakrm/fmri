@@ -62,8 +62,8 @@ def segformer_encode(model, dataloader, encoding_path, image_classes_path):
     if os.path.exists(encoding_path):
         print('Loading existing encoding file', encoding_path)
         encoded_image_classes = np.load(encoding_path)
-        image_classes = open(image_classes_path).read().strip().lower().replace(' ','_').split('\n')
-        return encoded_image_classes, image_classes
+        image_categories = open(image_classes_path).read().strip().lower().replace(' ','_').split('\n')
+        return encoded_image_classes, image_categories
     
     model.eval()
     model = model.to(device)
@@ -95,9 +95,9 @@ def segformer_encode(model, dataloader, encoding_path, image_classes_path):
     np.save(encoding_path, encode_image_classes)
 
     with open(image_classes_path, 'w') as f:
-        f.write('\n'.join(image_classes))
+        f.write('\n'.join(image_categories))
     
-    return encoded_image_classes, image_classes
+    return encode_image_classes, image_categories
 
 def format_embeddings(X, image_classes, embeddings_path):
 
@@ -144,7 +144,7 @@ def main():
         # reduced_image_classes = encoded_image_classes
     logger.info('Formatting embeddings')
     if not os.path.exists(args.emb_dir):
-        os.makedirs(args.emb_dir)
+        os.makedirs(f'{args.emb_dir}/{args.model_name}')
     # embeddings_path = f"{args.emb_dir}/{args.model_name}_{reduced_image_classes.shape[1]}.txt"
     embeddings_path = f"{args.emb_dir}/{args.model_name}_{encoded_image_classes.shape[1]}.txt"
     format_embeddings(encoded_image_classes, image_classes, embeddings_path)
