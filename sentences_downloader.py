@@ -105,21 +105,6 @@ def create_sentences_file(wordslist, index, part, download_path):
                         sentences_write.write(sentence + '\n')
                 sentences_write.close()
 
-# def config_parser():
-#     # import configargparse
-#     parser = configargparse.ArgumentParser()
-#     parser.add_argument('--config', is_config_file=True,
-#                         help='config file path')
-#     parser.add_argument("--wordlist_path", type=str, default="./data/wordlist.txt",
-#                         help='the whole wordlist file path')
-#     parser.add_argument("--sentences_path", type=str, default="./data/sentences.txt",
-#                         help='sentences file path')
-#     # parser.add_argument("--encodings file path", type=string, default="",
-#     #                     help='embeddings folder path')
-#     # parser.add_argument("--encodings file path", type)
-#     return parser
-
-
 def sum_files(root_path, sentences_path):
     files = os.listdir(root_path)
     words_repeated = []

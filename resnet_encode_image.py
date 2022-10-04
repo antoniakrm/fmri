@@ -1,14 +1,12 @@
-
 import os
 import torch
 import numpy as np
 from img2vec_pytorch import Img2Vec
-from utils import *
+from modified_utils import *
 from tqdm import tqdm
-import math
 from PIL import Image
 
-from sklearn.decomposition import PCA
+# from sklearn.decomposition import PCA
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -71,48 +69,7 @@ def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, ima
     f.write('\n'.join(image_classes))
 
   return encoded_image_classes, image_classes
- 
 
-def reduce_encoding_size(X, reduced_encodings_path, n_components=128):
-
-  if os.path.exists(reduced_encodings_path):
-    return np.load(reduced_encodings_path)
-  print('Original Shape: ', X.shape)
-  pca = PCA(n_components=n_components)
-  tr_data = pca.fit_transform(X)
-  print('Reduced Shape: ', tr_data.shape)
-
-  np.save(reduced_encodings_path, tr_data)
-
-  return tr_data
-
-def format_embeddings(X, image_classes, embeddings_path):
-
-  with open(embeddings_path, 'w') as outfile:
-    outfile.write(f'{str(X.shape[0])} {str(X.shape[1])}\n')
-    for img_name, vec in zip(image_classes, X):
-      outfile.write(
-          f"{img_name.lower().replace(' ', '_')} {' '.join([str(v) for v in vec.tolist()])}\n")
-
-def format_train_eval(path):
-    with open(path, 'r') as images_emb_reader:
-        lines = images_emb_reader.readlines()
-        # print(lines[0].split()[0])
-        train_size = math.floor(int(lines[0].split()[0]) * 0.7)
-        eval_size = int(lines[0].split()[0]) - train_size
-        with open(f'{path[:-4]}_train.txt', 'w') as images_emb_train:
-            images_emb_train.write(f'{train_size} {lines[0].split()[1]}\n')
-            for line in lines[1:train_size+1]:
-                images_emb_train.write(line)
-            images_emb_train.close()
-        with open(f'{path[:-4]}_eval.txt', 'w') as images_emb_eval:
-            images_emb_eval.write(f'{eval_size} {lines[0].split()[1]}\n')
-            for line in lines[train_size+1:]:
-                images_emb_eval.write(line)
-            images_emb_eval.close()
-        images_emb_reader.close()
-
- 
 def main():
   parser = config_parser()
   args = parser.parse_args()
@@ -130,27 +87,54 @@ def main():
     os.makedirs(args.output_dir)
 
   logger.info('Encoding images')
-  encoded_image_classes, image_classes = resnet_encode(model, os.path.expanduser(args.image_dir), encodings_path, image_classes_path, args.image_classes_id)
+  targets, image_classes = resnet_encode(model, os.path.expanduser(args.image_dir), encodings_path, image_classes_path, args.image_classes_id)
   logger.info('Encoding is completed!')
-  if args.n_components != encoded_image_classes.shape[1]:
-    logger.info('Reducing dimensionality')
-    reduced_image_classes = reduce_encoding_size(encoded_image_classes, reduced_encodings_path, args.n_components)
-    logger.info('Reducing dimensionality is completed!')
-  else:
-    reduced_image_classes = encoded_image_classes
 
-  logger.info('Formatting embeddings')
-  if not os.path.exists(args.emb_dir):
-    os.makedirs(args.emb_dir)
-  embeddings_path = f"{args.emb_dir}/{args.model_name}_{reduced_image_classes.shape[1]}.txt"
-  format_embeddings(reduced_image_classes, image_classes, embeddings_path)
-  logger.info('Format is completed!')
+  if args.n_components < targets.shape[1]:
+      output_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/outputs/res_out_reduced")
+      embeddings_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/res_emb_reduced")
+
+      if not os.path.exists(output_reduced_dir):
+          os.makedirs(output_reduced_dir)
+      if not os.path.exists(embeddings_reduced_dir):
+          os.makedirs(embeddings_reduced_dir)
+
+      reduced_encodings_path = f"{output_reduced_dir}/{args.model_name}_encodings_reduced_{args.n_components}.npy"
+      embeddings_path = f"{embeddings_reduced_dir}/{args.model_name}_reduced_{args.n_components}"
+      
+      logger.info('Reducing dimensionality')
+      final_target = reduce_encoding_size(targets, reduced_encodings_path, args.n_components)
+      logger.info('Reducing dimensionality is completed!')
+  else:
+      final_target = targets
+    
+  format_embeddings(final_target, image_classes, embeddings_path)
+    
+    # if targets.shape[1] > 2048:
+    #     reduced_targets = reduce_encoding_size(targets, f'./data/outputs_opt/reduced_{args.model_name}_{args.n_components}.npy', args.n_components)
+    #     format_embeddings(reduced_targets, words_in_sentences, f'./data/embeddings_opt/reduced_{args.model_name}_{args.n_components}')
+    # else:
+    #     format_embeddings(targets, words_in_sentences, embeddings_path)
+  logger.info('==========Format complete==========')
+  # if args.n_components != encoded_image_classes.shape[1]:
+  #   logger.info('Reducing dimensionality')
+  #   reduced_image_classes = reduce_encoding_size(encoded_image_classes, reduced_encodings_path, args.n_components)
+  #   logger.info('Reducing dimensionality is completed!')
+  # else:
+  #   reduced_image_classes = encoded_image_classes
+
+  # logger.info('Formatting embeddings')
+  # if not os.path.exists(args.emb_dir):
+  #   os.makedirs(args.emb_dir)
+  # embeddings_path = f"{args.emb_dir}/{args.model_name}_{reduced_image_classes.shape[1]}.txt"
+  # format_embeddings(reduced_image_classes, image_classes, embeddings_path)
+  # logger.info('Format is completed!')
 
   # logger.info('Reducing dimensionality')
   # reduced_image_classes = reduce_encoding_size(encoded_image_classes, reduced_encodings_path, args.n_components)
   # logger.info('Formatting embeddings')
   # format_embeddings(reduced_image_classes, image_classes, embeddings_path)
-  # format_train_eval(embeddings_path)
+
 
 if __name__ == "__main__":
     main()  

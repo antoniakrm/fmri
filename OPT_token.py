@@ -3,20 +3,9 @@ import numpy as np
 import torch
 import os
 from tqdm import tqdm
-from utils import *
-from sklearn.decomposition import PCA
+from modified_utils import *
 from sentences_downloader import sentences_download
 
-# import time
-# from numba import jit
-
-# from accelerate import Accelerator
-
-# accelerator = Accelerator()
-# device = accelerator.device
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-
-# a = torch.cuda.is_available()
 if not torch.cuda.is_available():
     device_ids = ["cpu"]
 else:
@@ -38,10 +27,6 @@ def load_texts(download, wordslist, sentences_path):
 def load_opt_model(string):
 
     device_map = None if len(device_ids)==1 else "auto"
-    # device_map = "auto"
-    # max_mem = {}
-    # for id in device_ids:
-    #     max_mem[id] = '21GIB'
 
     if string == "facebook/opt-350m":
         model = OPTModel.from_pretrained("facebook/opt-350m",\
@@ -58,39 +43,6 @@ def load_opt_model(string):
         model = model.to(device_ids[0])
     return model, tokenizer
 
-# def load_opt_model(string):
-#     configuration = OPTConfig.from_pretrained(string)
-#     with init_empty_weights():
-#         model = OPTModel(configuration)
-
-#     max_mem = 7029297736
-
-#     device_map = infer_auto_device_map(
-#     model, 
-#     max_memory={0: max_mem, 1: max_mem},
-#     no_split_module_classes=["OPTDecoderLayer"], 
-#     dtype='float16'
-#     )
-
-#     print(device_map)
-
-#     load_checkpoint_in_model(
-#         model, 
-#         , 
-#         device_map=device_map, 
-#         offload_folder=None, 
-#         dtype='float16', 
-#         offload_state_dict=True
-#     )
-#     model.tie_weights()
-
-#     full_model_device_map = {f"model.{k}": v for k, v in device_map.items()}
-#     full_model_device_map["lm_head"] = 0
-#     dispatch_model(model, device_map=full_model_device_map)
-#     # print(model)
-#     tokenizer = GPT2Tokenizer.from_pretrained(string)
-#     # return model.to(device), tokenizer
-#     return model, tokenizer
 
 # Preparing the input for BERT
 # Takes a string argument and performs
@@ -202,27 +154,6 @@ def average_word_embedding(contexts, model, tokenizer):
         # if ids%1000 == 0:
         #     logger.info(f'{ids} finished')
 
-def reduce_encoding_size(X, reduced_encodings_path, n_components=128):
-    if os.path.exists(reduced_encodings_path):
-        return np.load(reduced_encodings_path)
-    print(X.shape)
-    pca = PCA(n_components=n_components)
-    tr_data = pca.fit_transform(X)
-    print(tr_data.shape)
-
-    np.save(reduced_encodings_path, tr_data)
-
-    return tr_data
-
-def format_embeddings(X, words, embeddings_path):
-
-  with open(f"{embeddings_path}.txt", 'w') as outfile:
-    outfile.write(f'{str(X.shape[0])} {str(X.shape[1])}\n')
-    for word, vec in zip(words, X):
-      outfile.write(
-          f"{word.strip().lower()} {' '.join([str(v) for v in vec.tolist()])}\n")
-    outfile.close()
-
 
 if __name__ == "__main__":
 
@@ -268,9 +199,30 @@ if __name__ == "__main__":
         targets = np.load(encodings_path)
         words_in_sentences = open(args.ordered_words_path).read().strip().lower().split('\n')
     logger.info('==========Format embeddings==========')
-    if targets.shape[1] > 2048:
-        reduced_targets = reduce_encoding_size(targets, f'./data/outputs_opt/reduced_{args.model_name}_{args.n_components}.npy', args.n_components)
-        format_embeddings(reduced_targets, words_in_sentences, f'./data/embeddings_opt/reduced_{args.model_name}_{args.n_components}')
+
+    if args.n_components < targets.shape[1]:
+        output_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/outputs/LM_out_reduced")
+        embeddings_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/LM_emb_reduced")
+
+        if not os.path.exists(output_reduced_dir):
+            os.makedirs(output_reduced_dir)
+        if not os.path.exists(embeddings_reduced_dir):
+            os.makedirs(embeddings_reduced_dir)
+
+        reduced_encodings_path = f"{output_reduced_dir}/{args.model_name}_encodings_reduced_{args.n_components}.npy"
+        embeddings_path = f"{embeddings_reduced_dir}/{args.model_name}_reduced_{args.n_components}"
+        
+        logger.info('Reducing dimensionality')
+        final_target = reduce_encoding_size(targets, reduced_encodings_path, args.n_components)
+        logger.info('Reducing dimensionality is completed!')
     else:
-        format_embeddings(targets, words_in_sentences, embeddings_path)
+        final_target = targets
+    
+    format_embeddings(final_target, words_in_sentences, embeddings_path)
+    
+    # if targets.shape[1] > 2048:
+    #     reduced_targets = reduce_encoding_size(targets, f'./data/outputs_opt/reduced_{args.model_name}_{args.n_components}.npy', args.n_components)
+    #     format_embeddings(reduced_targets, words_in_sentences, f'./data/embeddings_opt/reduced_{args.model_name}_{args.n_components}')
+    # else:
+    #     format_embeddings(targets, words_in_sentences, embeddings_path)
     logger.info('==========Format complete==========')

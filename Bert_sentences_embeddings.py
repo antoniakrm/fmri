@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import os
 from tqdm import tqdm
-from utils import *
+from modified_utils import *
 
 # An orrange tabby cat is sleeping on the floor.
 

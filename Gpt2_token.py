@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import os
 from tqdm import tqdm
-from utils import *
+from modified_utils import *
 from sentences_downloader import sentences_download
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -137,17 +137,6 @@ def average_word_embedding(contexts, model, tokenizer):
             word_current = words_order[ids+1]
             words_in_sentences.append(word_current)
 
-
-def format_embeddings(X, words, embeddings_path):
-
-  with open(f"{embeddings_path}.txt", 'w') as outfile:
-    outfile.write(f'{str(X.shape[0])} {str(X.shape[1])}\n')
-    for word, vec in zip(words, X):
-      outfile.write(
-          f"{word.strip().lower()} {' '.join([str(v) for v in vec.tolist()])}\n")
-    outfile.close()
-
-
 if __name__ == "__main__":
 
     parser = config_parser()
@@ -186,6 +175,25 @@ if __name__ == "__main__":
         targets = np.load(encodings_path)
         words_in_sentences = open(args.ordered_words_path).read().strip().lower().split('\n')
     logger.info('==========Format embeddings==========')
-    format_embeddings(targets, words_in_sentences, embeddings_path)
+    # format_embeddings(targets, words_in_sentences, embeddings_path)
+    if args.n_components < targets.shape[1]:
+        output_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/outputs/LM_out_reduced")
+        embeddings_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/LM_emb_reduced")
+
+        if not os.path.exists(output_reduced_dir):
+            os.makedirs(output_reduced_dir)
+        if not os.path.exists(embeddings_reduced_dir):
+            os.makedirs(embeddings_reduced_dir)
+
+        reduced_encodings_path = f"{output_reduced_dir}/{args.model_name}_encodings_reduced_{args.n_components}.npy"
+        embeddings_path = f"{embeddings_reduced_dir}/{args.model_name}_reduced_{args.n_components}"
+
+        logger.info('Reducing dimensionality')
+        final_target = reduce_encoding_size(targets, reduced_encodings_path, args.n_components)
+        logger.info('Reducing dimensionality is completed!')
+    else:
+        final_target = targets
+    
+    format_embeddings(final_target, words_in_sentences, embeddings_path)
 
     logger.info('==========Format complete==========')

@@ -2,7 +2,7 @@
 from unicodedata import category
 from transformers import SegformerFeatureExtractor, SegformerForSemanticSegmentation, SegformerModel
 from PIL import Image
-from utils import *
+from modified_utils import *
 from tqdm import tqdm
 import os
 import torch
@@ -11,6 +11,7 @@ from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 import torchvision
 
+torch.cuda.empty_cache()
 # from sklearn.decomposition import PCA
 
 class ImageDataset(Dataset):
@@ -41,20 +42,12 @@ class ImageDataset(Dataset):
 
         category_size = len(images)
         values = self.extractor(images=images, return_tensors="pt")
-        inputs = torch.zeros(self.MAX_SIZE, self.CHANNELS, self.RESOLUTION_HEIGHT, self.RESOLUTION_WIDTH)
-        with torch.no_grad():
-            inputs[:category_size,:,:,:].copy_(values.pixel_values)
+        # inputs = torch.zeros(self.MAX_SIZE, self.CHANNELS, self.RESOLUTION_HEIGHT, self.RESOLUTION_WIDTH)
+        # with torch.no_grad():
+            # inputs[:category_size,:,:,:].copy_(values.pixel_values)
         
-        # inputs.pixel_values = torch.cat(inputs.pixel_values, dim=0)
-        # inputs = torch.cat(inputs, dim=0)
-        # print(inputs.pixel_values.shape)
-        # return images, [self.names[index]]*len(images)
-        # inputs = torch.zeros(200, 3, 512, 512)
-        # inputs = inputs.copy_(values.pixel_values)
-        # masks = torch.zeros(batch_size,200)
-        # print(inputs[130,:,:,:])
-        # masks[]
-        return inputs, (self.names[index], category_size)
+        # return inputs, (self.names[index], category_size)
+        return values.pixel_values, (self.names[index], category_size)
         
 device = "cuda" if torch.cuda.is_available() else "cpu"
 

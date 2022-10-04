@@ -5,6 +5,8 @@ import os
 import configargparse
 import subprocess
 from datetime import datetime as dt
+import numpy as np
+from sklearn.decomposition import PCA
 
 
 def initialize_exp(params):
@@ -52,3 +54,25 @@ def config_parser():
                         help='Words in the sentences in order.')
     # parser.add_argument("--encodings file path", type)
     return parser
+
+def format_embeddings(X, words, embeddings_path):
+
+  with open(f"{embeddings_path}.txt", 'w') as outfile:
+    outfile.write(f'{str(X.shape[0])} {str(X.shape[1])}\n')
+    for word, vec in zip(words, X):
+      outfile.write(
+          f"{word.strip().lower()} {' '.join([str(v) for v in vec.tolist()])}\n")
+    outfile.close()
+
+def reduce_encoding_size(X, reduced_encodings_path, n_components=128):
+
+    if os.path.exists(reduced_encodings_path):
+        return np.load(reduced_encodings_path)
+    print('Original Shape: ', X.shape)
+    pca = PCA(n_components=n_components)
+    tr_data = pca.fit_transform(X)
+    print('Reduced Shape: ', tr_data.shape)
+
+    np.save(reduced_encodings_path, tr_data)
+
+    return tr_data

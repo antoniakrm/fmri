@@ -1,6 +1,6 @@
 from transformers import SegformerFeatureExtractor, SegformerForSemanticSegmentation, SegformerModel
 from PIL import Image
-from utils import *
+from modified_utils import *
 from tqdm import tqdm
 import os
 import torch
