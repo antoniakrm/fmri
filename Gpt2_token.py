@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import os
 from tqdm import tqdm
-from modified_utils import *
+from encode_utils import *
 from sentences_downloader import sentences_download
 
 device = "cuda" if torch.cuda.is_available() else "cpu"

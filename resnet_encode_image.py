@@ -2,7 +2,7 @@ import os
 import torch
 import numpy as np
 from img2vec_pytorch import Img2Vec
-from modified_utils import *
+from encode_utils import *
 from tqdm import tqdm
 from PIL import Image
 
