@@ -1,0 +1,11 @@
+download_path = './data/download'
+model_prefix = ''
+model_name = 'resnet18'
+output_dir = './data/outputs/outputs_wiki_v3'
+emb_dir = './data/embeddings/embeddings_wiki_v3'
+wordlist_path = './data/wordlist_satisfied.txt'
+sentences_path = './data/sentences_from_wiki.txt'
+log_path = './logs'
+n_components = 128
+image_dir = '~/Dir/datasets/imagenet_21k_small'
+image_classes_id = './data/image_ids_wiki_using.txt'

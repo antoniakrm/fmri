@@ -1,0 +1,9 @@
+download_path = './data/download'
+model_prefix = ''
+model_name = 'gpt2'
+output_dir = './data/outputs/outputs_gpt2'
+emb_dir = './data/embeddings/embeddings_gpt2'
+wordlist_path = './data/wordlist_satisfied.txt'
+sentences_path = './data/sentences_from_wiki.txt'
+log_path = './logs'
+n_components = 128

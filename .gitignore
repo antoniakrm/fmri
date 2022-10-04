@@ -130,7 +130,6 @@ dmypy.json
 
 # project's files
 .vscode/
-configs/
 data/
 data_icp/
 data_words_images/
@@ -154,3 +153,4 @@ muse_unsup_slurm_tests/
 MUSE/data/crosslingual/
 MUSE/data/monolingual/
 MUSE/dumped/
+*.yaml
