@@ -42,12 +42,11 @@ class ImageDataset(Dataset):
 
         category_size = len(images)
         values = self.extractor(images=images, return_tensors="pt")
-        # inputs = torch.zeros(self.MAX_SIZE, self.CHANNELS, self.RESOLUTION_HEIGHT, self.RESOLUTION_WIDTH)
-        # with torch.no_grad():
-            # inputs[:category_size,:,:,:].copy_(values.pixel_values)
+        inputs = torch.zeros(self.MAX_SIZE, self.CHANNELS, self.RESOLUTION_HEIGHT, self.RESOLUTION_WIDTH)
+        with torch.no_grad():
+            inputs[:category_size,:,:,:].copy_(values.pixel_values)
         
-        # return inputs, (self.names[index], category_size)
-        return values.pixel_values, (self.names[index], category_size)
+        return inputs, (self.names[index], category_size)
         
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -122,7 +121,7 @@ def main():
     Resolution = int(args.model_name[-3:])
     imageset = ImageDataset(image_dir=os.path.expanduser(args.image_dir), image_category_id=args.image_classes_id, extractor=feature_extractor, resolution=Resolution)
     batch_size = 1
-    image_dataloader = torch.utils.data.DataLoader(imageset, batch_size=batch_size, num_workers=8, pin_memory=True)
+    image_dataloader = torch.utils.data.DataLoader(imageset, batch_size=batch_size, num_workers=4, pin_memory=True)
 
     logger.info('Encoding images')
     # encoded_image_classes, image_classes = segformer_encode(args.model_name, os.path.expanduser(args.image_dir), encodings_path, image_classes_list_path, args.image_classes_id)

@@ -170,8 +170,8 @@ if __name__ == "__main__":
     else:
         model = args.model_name
     # print(model)
-    encodings_path = f"{args.output_dir}/{args.model_name.replace('.','-')}_encodings.npy"
-    embeddings_path = f"{args.emb_dir}/{args.model_name.replace('.','-')}"
+    encodings_path = f"{args.output_dir}/{args.model_name}_encodings.npy"
+    embeddings_path = f"{args.emb_dir}/{args.model_name}"
 
     words, sentences = load_texts(wordslist=args.wordlist_path, sentences_path=args.sentences_path, download=args.download_path)
 
