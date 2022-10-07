@@ -31,7 +31,8 @@ PARAMETERS_NUM = {
     "segformer-b1-finetuned-ade-512-512":13.1,
     "segformer-b2-finetuned-ade-512-512":24.2,
     "segformer-b3-finetuned-ade-512-512":44.0,
-    "segformer-b4-finetuned-ade-512-512":60.8}
+    "segformer-b4-finetuned-ade-512-512":60.8,
+    "segformer-b5-finetuned-ade-640-640":81.4}
 
 # main
 parser = argparse.ArgumentParser(description='Supervised training')

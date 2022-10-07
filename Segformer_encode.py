@@ -1,6 +1,5 @@
 
-from unicodedata import category
-from transformers import SegformerFeatureExtractor, SegformerForSemanticSegmentation, SegformerModel
+from transformers import SegformerFeatureExtractor, SegformerModel
 from PIL import Image
 from encode_utils import *
 from tqdm import tqdm
@@ -8,8 +7,6 @@ import os
 import torch
 import numpy as np
 from torch.utils.data import Dataset
-from torchvision import datasets, transforms
-import torchvision
 
 torch.cuda.empty_cache()
 # from sklearn.decomposition import PCA
@@ -60,8 +57,10 @@ def segformer_encode(model, dataloader, encoding_path, image_classes_path):
     model.eval()
     model = model.to(device)
 
-    encode_image_classes = []
+    categories_encode = []
     image_categories = []
+    # images_encode = []
+    # images_name = []
     for inputs, (names, category_size) in tqdm(dataloader, mininterval=1800.0, maxinterval=3600.0):
         # inputs.pixel_values = inputs.pixel_values.squeeze(dim=0)
         # inputs = inputs.pixel_values.to(device)
@@ -71,25 +70,54 @@ def segformer_encode(model, dataloader, encoding_path, image_classes_path):
         # inputs = torch.cat([inputs[i,:category_size[i],:,:,:] for i in inputs_shape[0]], dim=0)
         inputs = inputs.reshape(-1, inputs_shape[2],inputs_shape[3],inputs_shape[4]).to(device)
         # print(inputs[130,:,:,:])
-        with torch.no_grad():
-            outputs = model(pixel_values=inputs)
-        chunks = torch.chunk(outputs.last_hidden_state.cpu(), inputs_shape[0], dim=0)
+
+        # for b5
+        bs_features = []
+        bs = 100
+        batches = [inputs[i:i+bs] for i in range(0, len(inputs), bs)]
+        for i in batches:
+            with torch.no_grad():
+                outputs = model(pixel_values=i)
+            bs_features.append(outputs.last_hidden_state)
+        bs_features = torch.cat(bs_features, axis=0).cpu()
+        chunks = torch.chunk(bs_features, inputs_shape[0], dim=0)
+
+        # for b0-4
+        # with torch.no_grad():
+        #     outputs = model(pixel_values=inputs)
+        # chunks = torch.chunk(outputs.last_hidden_state.cpu(), inputs_shape[0], dim=0)
 
         for idx, chip in enumerate(chunks):
-            features = np.mean(chip[:category_size[idx]].numpy(), axis=(2,3), keepdims=True).squeeze()
-            features_exp = np.expand_dims(features.mean(axis=0), 0)
+            # features for every image
+            images_features = np.mean(chip[:category_size[idx]].numpy(), axis=(2,3), keepdims=True).squeeze()
+            # features for categories
+            
+            category_feature = np.expand_dims(images_features.mean(axis=0), 0)
             # print(features.shape)
             # print(features_exp.shape)
             image_categories.append(names[idx])
-            encode_image_classes.append(features_exp)
+            images_name = [f"{names[idx]}_{i}" for i in range(category_size[idx])]
+            # images_name.append([f'{names[idx]}_{i}' for i in range(category_size[idx])])
+            # images_encode.append(images_features)
+            categories_encode.append(category_feature)
 
-    encode_image_classes = np.concatenate(encode_image_classes)
-    np.save(encoding_path, encode_image_classes)
+            # save images' features
+            format_embeddings(images_features, images_name, 
+            os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/seg_images_embedddings/{names[idx]}.txt"))
+
+    categories_encode = np.concatenate(categories_encode)
+    # images_encode = np.concatenate(images_encode)
+    # images_name = np.concatenate(images_name)
+
+    np.save(encoding_path, categories_encode)
+    # np.save('/home/kfb818/Dir/projects/IPLVE/names.npy',images_name)
+    # np.save('/home/kfb818/Dir/projects/IPLVE/images_seg_encode.npy', images_encode)
 
     with open(image_classes_path, 'w') as f:
         f.write('\n'.join(image_categories))
     
-    return encode_image_classes, image_categories
+    return categories_encode, image_categories
+    # return categories_encode, image_categories, images_encode, images_name
 
 def format_embeddings(X, image_classes, embeddings_path):
 
@@ -121,11 +149,11 @@ def main():
     Resolution = int(args.model_name[-3:])
     imageset = ImageDataset(image_dir=os.path.expanduser(args.image_dir), image_category_id=args.image_classes_id, extractor=feature_extractor, resolution=Resolution)
     batch_size = 1
-    image_dataloader = torch.utils.data.DataLoader(imageset, batch_size=batch_size, num_workers=4, pin_memory=True)
+    image_dataloader = torch.utils.data.DataLoader(imageset, batch_size=batch_size, num_workers=8, pin_memory=True)
 
     logger.info('Encoding images')
     # encoded_image_classes, image_classes = segformer_encode(args.model_name, os.path.expanduser(args.image_dir), encodings_path, image_classes_list_path, args.image_classes_id)
-    encoded_image_classes, image_classes = segformer_encode(model, dataloader=image_dataloader, \
+    categories_encode, image_categories = segformer_encode(model, dataloader=image_dataloader, \
          encoding_path=encodings_path, image_classes_path=image_classes_list_path)
     logger.info('Encoding is completed!')
 
@@ -135,12 +163,17 @@ def main():
     #     logger.info('Reducing dimensionality is completed!')
     # else:
         # reduced_image_classes = encoded_image_classes
+
     logger.info('Formatting embeddings')
     if not os.path.exists(args.emb_dir):
         os.makedirs(f'{args.emb_dir}/{args.model_name}')
     # embeddings_path = f"{args.emb_dir}/{args.model_name}_{reduced_image_classes.shape[1]}.txt"
-    embeddings_path = f"{args.emb_dir}/{args.model_name}_{encoded_image_classes.shape[1]}.txt"
-    format_embeddings(encoded_image_classes, image_classes, embeddings_path)
+    embeddings_path = f"{args.emb_dir}/{args.model_name}_{categories_encode.shape[1]}.txt"
+    # format categories
+    format_embeddings(categories_encode, image_categories, embeddings_path)
+    # format images
+    # embeddings_path = f"{args.emb_dir}/{args.model_name}_images_{categories_encode.shape[1]}.txt"
+    # format_embeddings(images_features, images_name, embeddings_path)
     logger.info('Format is completed!')
 
 if __name__ == "__main__":
