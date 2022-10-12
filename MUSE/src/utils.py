@@ -408,7 +408,7 @@ def load_embeddings(params, source, full_vocab=False):
     if emb_path.endswith('.bin'):
         return load_bin_embeddings(params, source, full_vocab)
     else:
-        return read_txt_embeddings(params, source, full_vocab)
+        return read_txt_embeddings(params, source, full_vocab=True)
 
 
 def normalize_embeddings(emb, types, mean=None):
