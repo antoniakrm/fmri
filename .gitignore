@@ -154,3 +154,4 @@ MUSE/data/crosslingual/
 MUSE/data/monolingual/
 MUSE/dumped/
 *.yaml
+*.npy

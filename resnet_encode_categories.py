@@ -82,6 +82,7 @@ def main():
   encodings_path = f"{args.output_dir}/{args.model_name}_encodings.npy"
   reduced_encodings_path = f"{args.output_dir}/{args.model_name}_{args.n_components}_reduced_encodings.npy"
   image_classes_path = f'{args.output_dir}/{args.model_name}_image_classes.txt'
+  embeddings_path = f"{args.emb_dir}/{args.model_name}_{args.n_components}"
 
   if not os.path.exists(args.output_dir):
     os.makedirs(args.output_dir)

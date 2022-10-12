@@ -8,7 +8,7 @@ import torch
 import numpy as np
 from torch.utils.data import Dataset
 
-torch.cuda.empty_cache()
+# torch.cuda.empty_cache()
 # from sklearn.decomposition import PCA
 
 class ImageDataset(Dataset):
