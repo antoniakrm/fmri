@@ -39,9 +39,23 @@ def dico_build(ids_words_path, seed, id_list=None, name_list=None):
     eval_part = dict(itertools.islice(i, math.ceil(len(shuffled_dict) * 0.15)))
     test_part = dict(i)
     # build id2w dict
-    # for key, values in train_part:
-    #     for value in values:
-    #         word_dico = f'{key} {value}'
+    train_dico = []
+    eval_dico = []
+    test_dico = []
+
+    for key, values in train_part.items():
+        for value in values:
+            train_dico.append(f'{key} {value}\n')
+
+    for key, values in eval_part.items():
+        for value in values:
+            eval_dico.append(f'{key} {value}\n')
+
+    for key, values in test_part.items():
+        for value in values:
+            test_dico.append(f'{key} {value}\n')
+
+    return train_dico, eval_dico, test_dico
     # build w2w dict
     # dico = []
     # for value in shuffled_dict.values():
@@ -54,34 +68,39 @@ def dico_build(ids_words_path, seed, id_list=None, name_list=None):
     # new_dico = list(dict.fromkeys(dico))
     # return new_dico
 
-def dico_write(write_dir, dico, seed):
-    if not os.path.exists(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt'):
-        with open(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt', 'w') as idname_w:
-            idname_w.write('\n'.join(dico))
-            idname_w.close()
+def dico_write(write_dir, dicos, seed):
+    for idx, part in enumerate(["train","eval","test"]):
+        with open(f'{write_dir}/{part}_wiki_dico_{seed}.txt', 'w+') as biw:
+            for iword in dicos[idx]:
+                biw.write(iword)
+            biw.close()
+    # if not os.path.exists(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt'):
+    #     with open(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt', 'w') as idname_w:
+    #         idname_w.write('\n'.join(dico))
+    #         idname_w.close()
     
-    all_dico = open(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt').readlines()
-    all_dico_size = len(all_dico)
+    # all_dico = open(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt').readlines()
+    # all_dico_size = len(all_dico)
 
-    train_nums = math.ceil(all_dico_size * 0.7)
-    validation_nums = math.ceil(all_dico_size * 0.85)
+    # train_nums = math.ceil(all_dico_size * 0.7)
+    # validation_nums = math.ceil(all_dico_size * 0.85)
     # test_nums = all_dico_size - validation_nums
 
-    with open(f'{write_dir}/train_wiki_dico_{seed}.txt', 'w+') as biw:
+    # with open(f'{write_dir}/train_wiki_dico_{seed}.txt', 'w+') as biw:
         
-        for iword in all_dico[:train_nums]:
-            biw.write(iword)
-        biw.close()
+    #     for iword in all_dico[:train_nums]:
+    #         biw.write(iword)
+    #     biw.close()
 
-    with open(f'{write_dir}/eval_wiki_dico_{seed}.txt', 'w+') as biw:
-        for iword in all_dico[train_nums:validation_nums]:
-            biw.write(iword)
-        biw.close()
+    # with open(f'{write_dir}/eval_wiki_dico_{seed}.txt', 'w+') as biw:
+    #     for iword in all_dico[train_nums:validation_nums]:
+    #         biw.write(iword)
+    #     biw.close()
 
-    with open(f'{write_dir}/test_wiki_dico_{seed}.txt', 'w+') as biw:
-        for iword in all_dico[validation_nums:]:
-            biw.write(iword)
-        biw.close()
+    # with open(f'{write_dir}/test_wiki_dico_{seed}.txt', 'w+') as biw:
+    #     for iword in all_dico[validation_nums:]:
+    #         biw.write(iword)
+    #     biw.close()
 
 if __name__ == '__main__':
     ids_words_path = './data/image_ids_wiki_using.txt'
@@ -96,6 +115,8 @@ if __name__ == '__main__':
     # seed = 'no'
     for _ in range(5):
         seed = random.randint(0, 1000)
-        dico = dico_build(ids_words_path, seed)
+        train_dico, eval_dico, test_dico = dico_build(ids_words_path, seed)
 
-        dico_write(write_dir=write_dir, dico=dico, seed=seed)
+        dico_write(write_dir=write_dir, dicos=[train_dico, eval_dico, test_dico], seed=seed)
+        # dico_write(write_dir=write_dir, dico=eval_dico, seed=seed)
+        # dico_write(write_dir=write_dir, dico=test_dico, seed=seed)

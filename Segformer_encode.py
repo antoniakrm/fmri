@@ -1,4 +1,3 @@
-
 from transformers import SegformerFeatureExtractor, SegformerModel
 from PIL import Image
 from encode_utils import *
@@ -43,7 +42,8 @@ class ImageDataset(Dataset):
         with torch.no_grad():
             inputs[:category_size,:,:,:].copy_(values.pixel_values)
         
-        return inputs, (self.names[index], category_size)
+        # return inputs, (self.names[index], category_size)
+        return inputs, (self.ids[index], category_size)
         
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -103,7 +103,7 @@ def segformer_encode(model, dataloader, encoding_path, image_classes_path):
 
             # save images' features
             format_embeddings(images_features, images_name, 
-            os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/seg_images_embedddings/{names[idx]}.txt"))
+                os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/seg_images_embedddings/{names[idx]}.txt"))
 
     categories_encode = np.concatenate(categories_encode)
     # images_encode = np.concatenate(images_encode)

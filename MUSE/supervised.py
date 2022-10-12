@@ -81,7 +81,7 @@ assert params.dico_eval == 'default' or os.path.isfile(params.dico_eval)
 assert params.export in ["", "txt", "pth"]
 
 wandb.init(
-    project="muse_supervised_debug", 
+    project="muse_supervised_id2w", 
     name=f"seed_{params.seed}_{params.src_lang}_{params.tgt_lang}",
     group=f"{params.src_lang}_{params.tgt_lang}",
     tags=[f"{params.src_lang}",f"{params.tgt_lang}"]

@@ -33,7 +33,8 @@ def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, ima
 
   def pil_image_class(image_class):
     images = []
-    class_id = image_classes_ids[image_classes.index(image_class)]
+    class_id = image_class
+    # class_id = image_classes_ids[image_classes.index(image_class)]
     image_ids = os.listdir(os.path.join(image_dir, class_id))
     for filename in os.listdir(os.path.join(image_dir, class_id)):
       try:
@@ -47,8 +48,8 @@ def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, ima
     bs = 300
     batches = [images_[i:i+bs] for i in range(0, len(images_), bs)]
     # image_ids = os.listdir(os.path.join(image_dir, image_class_id_))
-    image_name = image_class
-    images_names = [f"{image_name}_{i}" for i in range(len(images_))]
+    # image_name = image_class
+    images_names = [f"{image_class}_{i}" for i in range(len(images_))]
     features = []
 
     with torch.no_grad():
@@ -61,7 +62,7 @@ def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, ima
     return np.expand_dims(features.mean(axis=0), 0)
 
   encoded_image_classes = []
-  for image_class in tqdm(image_classes, mininterval=300.0, maxinterval=600.0):
+  for image_class in tqdm(image_classes_ids, mininterval=300.0, maxinterval=600.0):
     if os.path.exists(os.path.expanduser(f'~/Dir/projects/IPLVE/data/embeddings/res_images_embeddings/{image_class}.txt')):
       continue
     else:
