@@ -45,16 +45,15 @@ def dico_build(ids_words_path, seed, id_list=None, name_list=None):
 
     for key, values in train_part.items():
         for value in values:
-            train_dico.append(f'{key} {value}\n')
+            train_dico.append(f'{key} {value}')
 
     for key, values in eval_part.items():
         for value in values:
-            eval_dico.append(f'{key} {value}\n')
+            eval_dico.append(f'{key} {value}')
 
     for key, values in test_part.items():
         for value in values:
-            test_dico.append(f'{key} {value}\n')
-
+            test_dico.append(f'{key} {value}')
     return train_dico, eval_dico, test_dico
     # build w2w dict
     # dico = []
@@ -72,7 +71,7 @@ def dico_write(write_dir, dicos, seed):
     for idx, part in enumerate(["train","eval","test"]):
         with open(f'{write_dir}/{part}_wiki_dico_{seed}.txt', 'w+') as biw:
             for iword in dicos[idx]:
-                biw.write(iword)
+                biw.write(f"{iword}\n")
             biw.close()
     # if not os.path.exists(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt'):
     #     with open(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt', 'w') as idname_w:
@@ -113,8 +112,9 @@ if __name__ == '__main__':
     #     seed = random.randint(0, 100)
     #     dico_build(ids_words_path, seed)
     # seed = 'no'
-    for _ in range(5):
-        seed = random.randint(0, 1000)
+    # for _ in range(5):
+    #     seed = random.randint(0, 1000)
+    for seed in [203, 255, 633, 813, 881]:
         train_dico, eval_dico, test_dico = dico_build(ids_words_path, seed)
 
         dico_write(write_dir=write_dir, dicos=[train_dico, eval_dico, test_dico], seed=seed)

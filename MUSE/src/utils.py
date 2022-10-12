@@ -284,6 +284,7 @@ def read_txt_embeddings(params, source, full_vocab):
                 assert _emb_dim_file == int(split[1])
             else:
                 word, vect = line.rstrip().split(' ', 1)
+                print(word)
                 if not full_vocab:
                     word = word.lower()
                 vect = np.fromstring(vect, sep=' ')
