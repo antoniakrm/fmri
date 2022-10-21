@@ -28,16 +28,6 @@ def load_bert_model(string):
     tokenizer = BertTokenizerFast.from_pretrained(string)
     return model.to(device), tokenizer
 
-# def l2_norm(x):
-#    return np.sqrt(np.sum(x**2))
-
-# def div_norm(x):
-#    norm_value = l2_norm(x)
-#    if norm_value > 0:
-#        return x * ( 1.0 / norm_value)
-#    else:
-#        return x
-
 # Preparing the input for BERT
 # Takes a string argument and performs
 # pre-processing like adding special tokens, tokenization, 
@@ -86,6 +76,9 @@ def average_word_embedding(contexts, model, tokenizer):
     for ids, context in enumerate(iters):
         # if ids % int(1517786/100) == 0:
         # iters.set_description(f'Target shape: {np.array(target_word_average_embeddings).shape}')
+        # if os.path.exists(os.path.expanduser(f'~/Dir/datasets/dispersions/bert_words_embs/{words_order[ids]}.txt')):
+        #     word_current = words_order[ids+1]
+        #     continue
         if word_current == words_order[ids]:
             phrase = word_current.replace('_', ' ')
             # phrase_size = len(phrase)
@@ -118,12 +111,16 @@ def average_word_embedding(contexts, model, tokenizer):
             # subword_average_embedding.append(np.mean(words_embeddings, axis=0))
 
         if ids == len(contexts)-1:
+            # format_embeddings(np.array(subword_average_embedding), [f"{word_current}_{i}" for i in range(len(subword_average_embedding))], \
+            #     f"./data/embeddings/bert_words_embs/{word_current}")
             average_word_embedding = np.mean(subword_average_embedding, axis=0)
             target_word_average_embeddings.append(average_word_embedding)
             subword_average_embedding = []
             return words_in_sentences, np.array(target_word_average_embeddings)
 
         if words_order[ids+1] != words_order[ids]:
+            # format_embeddings(np.array(subword_average_embedding), [f"{word_current}_{i}" for i in range(len(subword_average_embedding))], \
+            #     f"./data/embeddings/bert_words_embs/{word_current}")
             average_word_embedding = np.mean(subword_average_embedding, axis=0)
             target_word_average_embeddings.append(average_word_embedding)
             subword_average_embedding = []

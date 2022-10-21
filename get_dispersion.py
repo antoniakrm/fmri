@@ -12,8 +12,10 @@ import multiprocessing as mp
 def get_dispersion(root_path, images_embeddigns_path):
     file_path = os.path.join(root_path, images_embeddigns_path)
     images_embeddings = open(file_path).readlines()
-    embeddings_nums, vec_size = images_embeddings[0].split()
+    # embeddings_nums, vec_size = images_embeddings[0].split()
+    
     name = images_embeddings[1].rstrip().split(' ', 1)[0][:-2]
+
     # cos_nn = torch.nn.CosineSimilarity(dim=1)
     vectors = []
     for i, line in enumerate(images_embeddings[1:]):
@@ -42,14 +44,21 @@ def get_dispersion(root_path, images_embeddigns_path):
 def get_dispersion_multi(root_path, image_categories):
     categories_dis = {}
     for image_category in image_categories:
+        
         dis, name = get_dispersion(root_path, image_category)
+        # except:
+        #     print(image_category)
         categories_dis[name] = dis
     return categories_dis
 
 def main():
-    # root_path = os.path.expanduser("~/Dir/projects/IPLVE/data/embeddings/seg_images_embeddings")
-    root_path = os.path.expanduser("~/Dir/projects/IPLVE/data/embeddings/res_images_embeddings")
-    # root_path = os.path.expanduser("~/Dir/projects/IPLVE/data/embeddings/embeddings_test")
+
+    # root_path = os.path.expanduser("~/Dir/datasets/dispersions/bert_words_embs")
+    root_path = os.path.expanduser("~/Dir/datasets/dispersions/gpt2_words_embs")
+    # root_path = os.path.expanduser("~/Dir/datasets/dispersions/opt_words_embs")
+    # root_path = os.path.expanduser("~/Dir/datasets/dispersions/seg_images_embs")
+    # root_path = os.path.expanduser("~/Dir/datasets/dispersions/res_images_embs")
+
     categories = os.listdir(root_path)
     num_categories = len(categories)
     time_start= time.time()
@@ -64,7 +73,7 @@ def main():
     for i in cos_res_list:
         categories_dis_dict.update(i)
     categories_dis_sorted = sorted(categories_dis_dict.items(), key = lambda kv:(kv[1], kv[0]))
-    with open('./data/sorted_dispersion_res.txt','w') as ssw:
+    with open('./data/sorted_dispersion_bert.txt','w') as ssw:
         for i in categories_dis_sorted:
             ssw.write(f"{i[0]}: {i[1]}\n")
         ssw.close()

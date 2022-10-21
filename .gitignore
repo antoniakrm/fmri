@@ -155,3 +155,4 @@ MUSE/data/monolingual/
 MUSE/dumped/
 *.yaml
 *.npy
+*.xlsx

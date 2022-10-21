@@ -71,6 +71,9 @@ def average_word_embedding(contexts, model, tokenizer):
     words_in_sentences = [word_current]
 
     for ids, context in enumerate(iters):
+        # if os.path.exists(os.path.expanduser(f'~/Dir/datasets/dispersions/gpt2_words_embs/{words_order[ids]}.txt')):
+        #     word_current = words_order[ids+1]
+        #     continue
         if word_current == words_order[ids]:
             phrase_lower = word_current.replace('_', ' ')
             context = context.split(': ',1)[1].strip('\n')
@@ -125,12 +128,16 @@ def average_word_embedding(contexts, model, tokenizer):
             #             break
 
         if ids == len(contexts)-1:
+            # format_embeddings(np.array(subword_average_embedding), [f"{word_current}_{i}" for i in range(len(subword_average_embedding))], \
+            #     f"./data/embeddings/gpt2_words_embs/{word_current}")
             average_word_embedding = np.mean(subword_average_embedding, axis=0)
             target_word_average_embeddings.append(average_word_embedding)
             subword_average_embedding = []
             return words_in_sentences, np.array(target_word_average_embeddings)
 
         if words_order[ids+1] != words_order[ids]:
+            # format_embeddings(np.array(subword_average_embedding), [f"{word_current}_{i}" for i in range(len(subword_average_embedding))], \
+            #     f"./data/embeddings/gpt2_words_embs/{word_current}")
             average_word_embedding = np.mean(subword_average_embedding, axis=0)
             target_word_average_embeddings.append(average_word_embedding)
             subword_average_embedding = []
@@ -196,4 +203,4 @@ if __name__ == "__main__":
     
     format_embeddings(final_target, words_in_sentences, embeddings_path)
 
-    logger.info('==========Format complete==========')
+    # logger.info('==========Format complete==========')

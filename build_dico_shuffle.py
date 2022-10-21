@@ -21,8 +21,12 @@ def dico_build(ids_words_path, seed, id_list=None, name_list=None):
             if id_v == id_val:
                 name = name_all[idx]
                 related_names.append(name)
-        related_dict[id_v] = related_names
+        if id_v in related_dict.keys():
+            continue
+        else:
+            related_dict[id_v] = related_names
     id_nums = len(related_dict)
+    print(id_nums)
 
     if seed > -1:
         keys = list(related_dict.keys())
@@ -54,6 +58,7 @@ def dico_build(ids_words_path, seed, id_list=None, name_list=None):
     for key, values in test_part.items():
         for value in values:
             test_dico.append(f'{key} {value}')
+    print(len(train_dico), len(eval_dico), len(test_dico))
     return train_dico, eval_dico, test_dico
     # build w2w dict
     # dico = []
@@ -70,8 +75,7 @@ def dico_build(ids_words_path, seed, id_list=None, name_list=None):
 def dico_write(write_dir, dicos, seed):
     for idx, part in enumerate(["train","eval","test"]):
         with open(f'{write_dir}/{part}_wiki_dico_{seed}.txt', 'w+') as biw:
-            for iword in dicos[idx]:
-                biw.write(f"{iword}\n")
+            biw.write('\n'.join(dicos[idx]))
             biw.close()
     # if not os.path.exists(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt'):
     #     with open(f'{write_dir}/image_classes_dict_wiki_seed_{seed}.txt', 'w') as idname_w:
@@ -117,6 +121,6 @@ if __name__ == '__main__':
     for seed in [203, 255, 633, 813, 881]:
         train_dico, eval_dico, test_dico = dico_build(ids_words_path, seed)
 
-        dico_write(write_dir=write_dir, dicos=[train_dico, eval_dico, test_dico], seed=seed)
+        # dico_write(write_dir=write_dir, dicos=[train_dico, eval_dico, test_dico], seed=seed)
         # dico_write(write_dir=write_dir, dico=eval_dico, seed=seed)
         # dico_write(write_dir=write_dir, dico=test_dico, seed=seed)

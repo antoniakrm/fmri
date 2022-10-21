@@ -77,19 +77,25 @@ def opt_embeddings(inputs, model):
 # the target word in all sentences
 # @jit
 def average_word_embedding(contexts, model, tokenizer):
-    iters = tqdm(contexts, mininterval=1800.0, maxinterval=3600.0)
-    # iters = tqdm(contexts,mininterval=2, maxinterval=4)
-    words_order = [i.split(':',1)[0].lower() for i in contexts]
     
+    # iters = tqdm(contexts,mininterval=2, maxinterval=4)
+    words_order = [i.split(': ',1)[0].lower() for i in contexts]
+    contexts = [context.split(': ',1)[1].strip('\n') for context in contexts]
+    iters = tqdm(contexts, mininterval=1800.0, maxinterval=3600.0)
+
     word_current = words_order[0]
     subword_average_embedding = []
     target_word_average_embeddings = []
     words_in_sentences = [word_current]
 
     for ids, context in enumerate(iters):
+        # if os.path.exists(os.path.expanduser(f'~/Dir/datasets/dispersions/opt_words_embs/{words_order[ids]}.txt')):
+        #     word_current = words_order[ids+1]
+        #     continue
+        # else:
         if word_current == words_order[ids]:
-            phrase_lower = word_current[:-2].replace('_', ' ')
-            context = context.split(': ',1)[1].strip('\n')
+            phrase_lower = word_current.replace('_', ' ')
+            # context = context.split(': ',1)[1].strip('\n')
 
             # Find the spercific type of the phrase in the sentence
             # Find the correct index of the tokens in the sentence
@@ -140,12 +146,18 @@ def average_word_embedding(contexts, model, tokenizer):
             #             break
 
         if ids == len(contexts)-1:
+            # format_embeddings(np.array(subword_average_embedding), [f"{word_current}_{i}" for i in range(len(subword_average_embedding))], \
+            #     f"./data/embeddings/opt_words_embs/{word_current}")
             average_word_embedding = np.mean(subword_average_embedding, axis=0)
             target_word_average_embeddings.append(average_word_embedding)
             subword_average_embedding = []
             return words_in_sentences, np.array(target_word_average_embeddings)
 
         if words_order[ids+1] != words_order[ids]:
+            # print(subword_average_embedding)
+            # print(np.array(subword_average_embedding).shape)
+            # format_embeddings(np.array(subword_average_embedding), [f"{word_current}_{i}" for i in range(len(subword_average_embedding))], \
+            #     f"./data/embeddings/opt_words_embs/{word_current}")
             average_word_embedding = np.mean(subword_average_embedding, axis=0)
             target_word_average_embeddings.append(average_word_embedding)
             subword_average_embedding = []

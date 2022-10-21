@@ -15,8 +15,10 @@ def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, ima
   if os.path.exists(encodings_path):
     print('Loading existing encodings file', encodings_path)
     encoded_image_classes = np.load(encodings_path)
-    image_classes = open(image_classes_path).read().strip().lower().replace(' ','_').split('\n')
-    return encoded_image_classes, image_classes
+    # image_classes = open(image_classes_path).read().strip().lower().replace(' ','_').split('\n')
+    ids_words = open(image_id_words_path).readlines()
+    image_classes_ids = [i.strip('\n').split(': ')[0] for i in ids_words]
+    return encoded_image_classes, image_classes_ids
    
   # img2vec = Img2Vec(model=model_name, cuda=torch.cuda.is_available())
   # image_classes_ids = os.listdir(image_dir)
@@ -66,9 +68,9 @@ def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, ima
   np.save(encodings_path, encoded_image_classes)
 
   with open(image_classes_path, 'w') as f:
-    f.write('\n'.join(image_classes))
+    f.write('\n'.join(image_classes_ids))
 
-  return encoded_image_classes, image_classes
+  return encoded_image_classes, image_classes_ids
 
 def main():
   parser = config_parser()
@@ -111,30 +113,7 @@ def main():
     
   format_embeddings(final_target, image_classes, embeddings_path)
     
-    # if targets.shape[1] > 2048:
-    #     reduced_targets = reduce_encoding_size(targets, f'./data/outputs_opt/reduced_{args.model_name}_{args.n_components}.npy', args.n_components)
-    #     format_embeddings(reduced_targets, words_in_sentences, f'./data/embeddings_opt/reduced_{args.model_name}_{args.n_components}')
-    # else:
-    #     format_embeddings(targets, words_in_sentences, embeddings_path)
   logger.info('==========Format complete==========')
-  # if args.n_components != encoded_image_classes.shape[1]:
-  #   logger.info('Reducing dimensionality')
-  #   reduced_image_classes = reduce_encoding_size(encoded_image_classes, reduced_encodings_path, args.n_components)
-  #   logger.info('Reducing dimensionality is completed!')
-  # else:
-  #   reduced_image_classes = encoded_image_classes
-
-  # logger.info('Formatting embeddings')
-  # if not os.path.exists(args.emb_dir):
-  #   os.makedirs(args.emb_dir)
-  # embeddings_path = f"{args.emb_dir}/{args.model_name}_{reduced_image_classes.shape[1]}.txt"
-  # format_embeddings(reduced_image_classes, image_classes, embeddings_path)
-  # logger.info('Format is completed!')
-
-  # logger.info('Reducing dimensionality')
-  # reduced_image_classes = reduce_encoding_size(encoded_image_classes, reduced_encodings_path, args.n_components)
-  # logger.info('Formatting embeddings')
-  # format_embeddings(reduced_image_classes, image_classes, embeddings_path)
 
 
 if __name__ == "__main__":

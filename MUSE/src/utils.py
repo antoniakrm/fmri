@@ -284,7 +284,6 @@ def read_txt_embeddings(params, source, full_vocab):
                 assert _emb_dim_file == int(split[1])
             else:
                 word, vect = line.rstrip().split(' ', 1)
-                print(word)
                 if not full_vocab:
                     word = word.lower()
                 vect = np.fromstring(vect, sep=' ')
@@ -409,7 +408,7 @@ def load_embeddings(params, source, full_vocab=False):
     if emb_path.endswith('.bin'):
         return load_bin_embeddings(params, source, full_vocab)
     else:
-        return read_txt_embeddings(params, source, full_vocab=True)
+        return read_txt_embeddings(params, source, full_vocab)
 
 
 def normalize_embeddings(emb, types, mean=None):

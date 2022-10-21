@@ -17,18 +17,18 @@ def change_emb(root_dir):
 
         vect = [vecs[i] for i in idx]
         ids_unique = [ids[i] for i in idx]
-        res = [f'{i} {j}\n' for i,j in zip(ids_unique, vect)]
+        res = [f'{i} {j}' for i,j in zip(ids_unique, vect)]
         # final_res = list(dict.fromkeys(res))
 
         ids = [i.split(': ')[0] for i in ids_names_pairs]
         vecs = [i.strip().split(' ',1)[1] for i in embeddings_res[1:]]
 
-        with open(f'./data/embeddings/embeddings_res/{dir}', 'w') as ec:
+        with open(f'./data/embeddings/embeddings_seg/nvidia/{dir}', 'w') as ec:
             ec.write(f'{len(res)} {size}')    
-            ec.write(f"{''.join(res)}\n")
+            ec.write('\n'.join(res))
 
 
 if __name__ == "__main__":
-    root_dir = './data/embeddings/embeddings_res_old/'
+    root_dir = './data/embeddings/embeddings_seg_old/nvidia'
     change_emb(root_dir)
     

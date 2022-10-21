@@ -80,21 +80,17 @@ assert os.path.isfile(params.tgt_emb)
 assert params.dico_eval == 'default' or os.path.isfile(params.dico_eval)
 assert params.export in ["", "txt", "pth"]
 
-if 'phrase' in params.dico_eval :
-    polysemy_type = 'PHRASE'
-elif '2to3' in params.dico_eval:
-    polysemy_type = '2&3'
-elif 'unk' in params.dico_eval:
-    polysemy_type = 'UNKNOWN'
-elif 'single' in params.dico_eval:
-    polysemy_type = '1'
+if 'low' in params.dico_eval :
+    dis_type = 'low'
+elif 'medium' in params.dico_eval:
+    dis_type = 'medium'
 else:
-    polysemy_type = '4+'
+    dis_type = 'high'
 
 wandb.init(
-    project="muse_supervised_polysemy_unk", 
+    project="muse_supervised_lm_dispersion2", 
     name=f"seed_{params.seed}_{params.src_lang}_{params.tgt_lang}",
-    group=f"{params.src_lang}_{params.tgt_lang}_{polysemy_type}",
+    group=f"{params.src_lang}_{params.tgt_lang}_{dis_type}",
     tags=[f"{params.src_lang}",f"{params.tgt_lang}"]
     )
 
@@ -158,7 +154,6 @@ for n_iter in range(params.n_refinement + 1):
         "precision_at_1-csls_knn_100":to_log["precision_at_1-csls_knn_100"] , 
         "precision_at_10-csls_knn_100":to_log["precision_at_10-csls_knn_100"] , 
         "precision_at_100-csls_knn_100":to_log["precision_at_100-csls_knn_100"] , 
-        "Meanings":polysemy_type,
         # "tgt_parameters_num":tgt_parameter_size[0],
         # "src_parameters_num":src_parameter_size[0],
     #     # "mean_cosine-nn-S2T-10000": 0.5837700366973877, 

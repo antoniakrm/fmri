@@ -150,7 +150,14 @@ def get_word_translation_accuracy(lang1, word2id1, emb1, lang2, word2id2, emb2, 
         # allow for multiple possible translations
         matching = {}
         for i, src_id in enumerate(dico[:, 0].cpu().numpy()):
-            matching[src_id] = min(matching.get(src_id, 0) + _matching[i], 1)
+            # matching[src_id] = min(matching.get(src_id, 0) + _matching[i], 1)
+            # for words' dispersion, frequency, polysemy experiments
+            if src_id in matching:
+                # print(_matching[i])
+                matching[src_id] = np.mean([matching[src_id], _matching[i]])
+            else:
+                matching[src_id] = _matching[i]
+
         # evaluate precision@k
         precision_at_k = 100 * np.mean(list(matching.values()))
         logger.info("%i source words - %s - Precision at k = %i: %f" %

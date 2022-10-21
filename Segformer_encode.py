@@ -102,16 +102,16 @@ def segformer_encode(model, dataloader, encoding_path, image_classes_path):
             categories_encode.append(category_feature)
 
             # save images' features
-            format_embeddings(images_features, images_name, 
-                os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/seg_images_embedddings/{names[idx]}.txt"))
+            # format_embeddings(images_features, images_name, 
+            #     os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/seg_images_embs/{names[idx]}.txt"))
 
     categories_encode = np.concatenate(categories_encode)
     # images_encode = np.concatenate(images_encode)
     # images_name = np.concatenate(images_name)
 
     np.save(encoding_path, categories_encode)
-    # np.save('/home/kfb818/Dir/projects/IPLVE/names.npy',images_name)
-    # np.save('/home/kfb818/Dir/projects/IPLVE/images_seg_encode.npy', images_encode)
+    # np.save('~/Dir/projects/IPLVE/names.npy',images_name)
+    # np.save('~/Dir/projects/IPLVE/images_seg_encode.npy', images_encode)
 
     with open(image_classes_path, 'w') as f:
         f.write('\n'.join(image_categories))
@@ -157,20 +157,31 @@ def main():
          encoding_path=encodings_path, image_classes_path=image_classes_list_path)
     logger.info('Encoding is completed!')
 
-    # if args.n_components != encoded_image_classes.shape[1]:
-    #     logger.info('Reducing dimensionality')
-    #     reduced_image_classes = reduce_encoding_size(encoded_image_classes, reduced_encodings_path, args.n_components)
-    #     logger.info('Reducing dimensionality is completed!')
-    # else:
-        # reduced_image_classes = encoded_image_classes
-
     logger.info('Formatting embeddings')
     if not os.path.exists(args.emb_dir):
         os.makedirs(f'{args.emb_dir}/{args.model_name}')
     # embeddings_path = f"{args.emb_dir}/{args.model_name}_{reduced_image_classes.shape[1]}.txt"
-    embeddings_path = f"{args.emb_dir}/{args.model_name}_{categories_encode.shape[1]}.txt"
+    embeddings_path = f"{args.emb_dir}/{args.model_name}_{categories_encode.shape[1]}"
+    
+    if args.n_components < categories_encode.shape[1]:
+        output_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/outputs/seg_out_reduced")
+        embeddings_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/seg_emb_reduced")
+
+        if not os.path.exists(output_reduced_dir):
+            os.makedirs(f"{output_reduced_dir}/{args.model_name}")
+        if not os.path.exists(embeddings_reduced_dir):
+            os.makedirs(f"{embeddings_reduced_dir}/{args.model_name}")
+
+        reduced_encodings_path = f"{output_reduced_dir}/{args.model_name}_encodings_reduced_{args.n_components}.npy"
+        embeddings_path = f"{embeddings_reduced_dir}/{args.model_name}_reduced_{args.n_components}"
+        
+        logger.info('Reducing dimensionality')
+        final_target = reduce_encoding_size(categories_encode, reduced_encodings_path, args.n_components)
+        logger.info('Reducing dimensionality is completed!')
+    else:
+        final_target = categories_encode
     # format categories
-    format_embeddings(categories_encode, image_categories, embeddings_path)
+    format_embeddings(final_target, image_categories, embeddings_path)
     # format images
     # embeddings_path = f"{args.emb_dir}/{args.model_name}_images_{categories_encode.shape[1]}.txt"
     # format_embeddings(images_features, images_name, embeddings_path)

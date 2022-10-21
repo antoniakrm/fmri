@@ -14,12 +14,12 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, image_id_words_path=None):
 
-  if os.path.exists(encodings_path):
-    print('Loading existing encodings file', encodings_path)
-    encoded_image_classes = np.load(encodings_path)
-    print(encoded_image_classes.shape)
-    image_classes = open(image_classes_path).read().strip().lower().replace(' ','_').split('\n')
-    return encoded_image_classes, image_classes
+  # if os.path.exists(encodings_path):
+  #   print('Loading existing encodings file', encodings_path)
+  #   encoded_image_classes = np.load(encodings_path)
+  #   print(encoded_image_classes.shape)
+  #   image_classes = open(image_classes_path).read().strip().lower().replace(' ','_').split('\n')
+  #   return encoded_image_classes, image_classes
 
   img2vec = Img2Vec(model=model_name, cuda=torch.cuda.is_available())
   # image_classes_ids = os.listdir(image_dir)
@@ -57,13 +57,13 @@ def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, ima
         features.append(img2vec.get_vec(batch, tensor=True).to('cpu').numpy())
     features = np.concatenate(features).squeeze()
 
-    format_embeddings(features, images_names, os.path.expanduser(f'~/Dir/projects/IPLVE/data/embeddings/res_images_embeddings/{image_name}.txt'))
+    format_embeddings(features, images_names, os.path.expanduser(f'~/Dir/projects/IPLVE/data/embeddings/res_images_embs/{image_class}.txt'))
 
     return np.expand_dims(features.mean(axis=0), 0)
 
   encoded_image_classes = []
-  for image_class in tqdm(image_classes_ids, mininterval=300.0, maxinterval=600.0):
-    if os.path.exists(os.path.expanduser(f'~/Dir/projects/IPLVE/data/embeddings/res_images_embeddings/{image_class}.txt')):
+  for image_class in tqdm(image_classes_ids, mininterval=3600.0, maxinterval=7200.0):
+    if os.path.exists(os.path.expanduser(f'~/Dir/projects/IPLVE/data/embeddings/res_images_embs/{image_class}.txt')):
       continue
     else:
       images = pil_image_class(image_class)
@@ -71,11 +71,11 @@ def resnet_encode(model_name, image_dir, encodings_path, image_classes_path, ima
     # print(encoded_image_classes.shape)
     # return 0
 
-  encoded_image_classes = np.concatenate(encoded_image_classes)
-  np.save(encodings_path, encoded_image_classes)
+  # encoded_image_classes = np.concatenate(encoded_image_classes)
+  # np.save(encodings_path, encoded_image_classes)
 
-  with open(image_classes_path, 'w') as f:
-    f.write('\n'.join(image_classes))
+  # with open(image_classes_path, 'w') as f:
+    # f.write('\n'.join(image_classes))
 
   return encoded_image_classes, image_classes
 
@@ -122,14 +122,14 @@ def main():
 
   logger.info('Encoding images')
   encoded_image_classes, image_classes = resnet_encode(model, os.path.expanduser(args.image_dir), encodings_path, image_classes_path, args.image_classes_id)
-  # logger.info('Reducing dimensionality')
-  # if args.n_components <2048:
-  #   final_target = reduce_encoding_size(encoded_image_classes, reduced_encodings_path, args.n_components)
-  # else:
-  #   final_target = encoded_image_classes
-  # logger.info('Formatting embeddings')
+  logger.info('Reducing dimensionality')
+  if args.n_components <2048:
+    final_target = reduce_encoding_size(encoded_image_classes, reduced_encodings_path, args.n_components)
+  else:
+    final_target = encoded_image_classes
+  logger.info('Formatting embeddings')
 
-  # format_embeddings(final_target, image_classes, embeddings_path)
+  format_embeddings(final_target, image_classes, embeddings_path)
 
 
 #   id_list = os.listdir(os.path.expanduser('~/Dir/projects/summer_intern/data_words_images/images_embeddings_txt'))
