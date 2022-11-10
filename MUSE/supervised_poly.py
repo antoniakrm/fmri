@@ -92,9 +92,9 @@ else:
     polysemy_type = '4+'
 
 wandb.init(
-    project="muse_supervised_id2words", 
+    project="muse_supervised_poly", 
     name=f"seed_{params.seed}_{params.src_lang}_{params.tgt_lang}",
-    group=f"{params.src_lang}_{params.tgt_lang}",
+    group=f"{params.src_lang}_{params.tgt_lang}_{polysemy_type}",
     tags=[f"{params.src_lang}",f"{params.tgt_lang}"]
     )
 

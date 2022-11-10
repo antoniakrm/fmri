@@ -119,14 +119,14 @@ def segformer_encode(model, dataloader, encoding_path, image_classes_path):
     return categories_encode, image_categories
     # return categories_encode, image_categories, images_encode, images_name
 
-def format_embeddings(X, image_classes, embeddings_path):
+# def format_embeddings(X, image_classes, embeddings_path):
 
-    with open(embeddings_path, 'w') as outfile:
-        outfile.write(f'{str(X.shape[0])} {str(X.shape[1])}\n')
-        for img_name, vec in zip(image_classes, X):
-            outfile.write(
-                f"{img_name.lower().replace(' ', '_')} {' '.join([str(v) for v in vec.tolist()])}\n"
-            )
+#     with open(embeddings_path, 'w') as outfile:
+#         outfile.write(f'{str(X.shape[0])} {str(X.shape[1])}\n')
+#         for img_name, vec in zip(image_classes, X):
+#             outfile.write(
+#                 f"{img_name.lower().replace(' ', '_')} {' '.join([str(v) for v in vec.tolist()])}\n"
+#             )
 
 def main():
     parser = config_parser()
@@ -168,12 +168,12 @@ def main():
         embeddings_reduced_dir = os.path.expanduser(f"~/Dir/projects/IPLVE/data/embeddings/seg_emb_reduced")
 
         if not os.path.exists(output_reduced_dir):
-            os.makedirs(f"{output_reduced_dir}/{args.model_name}")
+            os.makedirs(f"{output_reduced_dir}")
         if not os.path.exists(embeddings_reduced_dir):
-            os.makedirs(f"{embeddings_reduced_dir}/{args.model_name}")
+            os.makedirs(f"{embeddings_reduced_dir}")
 
-        reduced_encodings_path = f"{output_reduced_dir}/{args.model_name}_encodings_reduced_{args.n_components}.npy"
-        embeddings_path = f"{embeddings_reduced_dir}/{args.model_name}_reduced_{args.n_components}"
+        reduced_encodings_path = f"{output_reduced_dir}/{args.model_name[7:]}_encodings_reduced_{args.n_components}.npy"
+        embeddings_path = f"{embeddings_reduced_dir}/{args.model_name[7:]}_{args.n_components}"
         
         logger.info('Reducing dimensionality')
         final_target = reduce_encoding_size(categories_encode, reduced_encodings_path, args.n_components)
