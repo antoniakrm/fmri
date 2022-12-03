@@ -130,6 +130,7 @@ dmypy.json
 
 # project's files
 .vscode/
+data_pub/
 data/
 data_icp/
 data_words_images/
@@ -153,6 +154,11 @@ muse_unsup_slurm_tests/
 MUSE/data/crosslingual/
 MUSE/data/monolingual/
 MUSE/dumped/
-*.yaml
 *.npy
 *.xlsx
+Bert_sentences_embeddings.py
+change_emb.py
+testfiles/
+MUSE/supervised_lm.py
+MUSE/supervised_freq.py
+MUSE/supervised_poly.py

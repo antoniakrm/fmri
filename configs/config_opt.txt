@@ -1,9 +1,0 @@
-download_path = './data/download'
-model_prefix = 'facebook'
-model_name = 'opt-6.7b'
-output_dir = './data/outputs/outputs_opt'
-emb_dir = './data/embeddings/embeddings_opt'
-wordlist_path = './data/wordlist_satisfied.txt'
-sentences_path = './data/sentences_from_wiki.txt'
-log_path = './logs'
-n_components = 512

@@ -1,18 +1,9 @@
-# import string
-# from transformers import BertTokenizerFast, BertModel
-# import pandas as pd
-import numpy as np
-import os
-# import nltk
-# import torch
-import requests
 import json
-# from language_detector import detect_language
-# import unicodedata
-# from bs4 import BeautifulSoup
-# import configargparse
-import fasttext as ft
+import os
 import threading
+
+import fasttext as ft
+import requests
 
 ft.FastText.eprint = lambda x:None
 
@@ -105,7 +96,7 @@ def create_sentences_file(wordslist, index, part, download_path):
                         sentences_write.write(sentence + '\n')
                 sentences_write.close()
 
-def sum_files(root_path, sentences_path):
+def sum_files(root_path, sentences_path, args):
     files = os.listdir(root_path)
     words_repeated = []
     sentences = []
@@ -121,7 +112,7 @@ def sum_files(root_path, sentences_path):
     words = list(dict.fromkeys(words_repeated))
     sentences_no_repeat = list(dict.fromkeys(sentences))
 
-    with open('./data/wordlist_satisfied.txt','w+') as word_w:
+    with open(args.data.get("wordlist_path", "./data/wordlist_downloaded.txt"),'w+') as word_w:
         for word in words:
             word_w.write(f'{word}\n')
         word_w.close()
@@ -132,38 +123,10 @@ def sum_files(root_path, sentences_path):
         sent_w.close()
 
 
-def build_image_classes_maps():
-    words = open('./data/wordlist_satisfied.txt').read().strip().split('\n')
-    image_classes_ids = os.listdir('./data/imagenet_21k_small')
-
-    image_maps = open('./data/imagenet21k_ids_names.txt').read().strip().split('\n')
-    image_dict = {}
-    for image_map in image_maps:
-        image_dict[image_map.split(': ')[0]] = image_map.split(': ')[1].split(', ')
-
-    count = 0
-    # image_with_sentences = []
-    image_ids_using = []
-    image_words_using = []
-    for id in image_classes_ids:
-        curr = list(filter(lambda x: x in words, image_dict[id]))
-        if curr:
-            count += 1
-            for w in curr:
-                image_ids_using.append(id)
-                image_words_using.append(w)
-            # image_with_sentences.extend(curr)
-    print(count)
-
-    with open('./data/image_ids_wiki_using.txt', 'w+') as ids_w:
-        for x,y in zip(image_ids_using, image_words_using):
-            ids_w.write(f'{x}: {y}\n')
-        ids_w.close()
-
-
-def sentences_download(download_path, wordlist, sentences_path):
-    # parser = config_parser()
-    # args = parser.parse_args()
+def sentences_download(args):
+    wordlist = args.data.wordlist_path
+    sentences_path = args.data.sentences_path
+    download_path = args.data.download_path
     if not os.path.exists(sentences_path):
         print('Begin downloading sentences.')
         threads = []
@@ -176,6 +139,5 @@ def sentences_download(download_path, wordlist, sentences_path):
 
         for thre in threads:
             thre.join()
-        sum_files(download_path, sentences_path)
-        build_image_classes_maps()
+        sum_files(download_path, sentences_path, args)
     print('Download sentences successfully.')

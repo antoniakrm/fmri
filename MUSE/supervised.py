@@ -134,23 +134,6 @@ for n_iter in range(params.n_refinement + 1):
     # embeddings evaluation
     to_log = OrderedDict({'n_iter': n_iter})
     evaluator.all_eval(to_log)
-    # precision_log = {key:val for key, val in to_log.items() if key.startswith("precision") and key.endswith("100")}
-    # print(precision_log) 
-    # columns = [key for key in precision_log.keys()]
-    # data = [[x, y] for (x, y) in precision_log.values()]
-    # precision_data = [[precision_log[key]] for key in columns]
-    
-    # table = wandb.Table(data=data, columns = ["Parameters", "Precision"])
-    
-    # wandb.log({"LM" : wandb.plot.line_series(xs=tgt_parameter_size*len(precision_data), 
-    # ys=precision_data, xname="log(Parameters)", keys=columns, title="LM")})
-
-    # data = [[x, y] for (x, y) in zip(tgt_parameter_size*len(precision_data), precision_data)]
-    # table = wandb.Table(data=data, columns = ["Parameters", "Precision"])
-    
-    # wandb.log({"LM" : wandb.plot.line(table, x="Parameters", y='Precision', title="LM")})
-
-    # # print(to_log["precision_at_1-nn"])
     wandb.log({
         # "precision_at_1-nn": to_log["precision_at_1-nn"], 
         # "precision_at_10-nn":to_log["precision_at_10-nn"] , 
@@ -161,8 +144,6 @@ for n_iter in range(params.n_refinement + 1):
         # "Meanings":polysemy_type,
         # "tgt_parameters_num":tgt_parameter_size[0],
         # "src_parameters_num":src_parameter_size[0],
-    #     # "mean_cosine-nn-S2T-10000": 0.5837700366973877, 
-    #     # "mean_cosine-csls_knn_100-S2T-10000": 0.5718205571174622
     })
 
     # JSON log / save best model / end of epoch

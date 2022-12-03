@@ -1,18 +1,20 @@
 import json
 import os
 
-def get_polyseme():
-    cache = json.load(open('/image/nlp-datasets/yova/cached_requests_omw'))
-    words_list = open('./data/wordlist_ordered.txt').read().strip().lower().split('\n')
+
+def get_polyseme(args):
+    # cache = json.load(open('/image/nlp-datasets/yova/cached_requests_omw'))
+    # words_list = open('./data/wordlist_ordered.txt').read().strip().lower().split('\n')
+    polyseme_source_path = args.data.setdefault(
+        "poly_src_path", 
+        "/image/nlp-datasets/yova/cached_requests_omw")
+    cache = json.load(open(polyseme_source_path))
+    words_list = open(
+        args.data.get(
+            "ordered_wordlist_path", 
+            "./data/ordered_wordlist.txt")).read().strip().lower().split('\n')
     print('length of words_list: ', len(words_list))
     eng_table = cache['en']
-    # test = eng_table['drawer'][0]
-    test = eng_table['towel'][0]
-    # for en in eng_table:
-    #     size = len(en[0].split('_'))
-    #     if size > 1:
-    #         print(en[0])
-    # test2 = eng_table['rivet'][0]
     num_meaning = {}
     for word in words_list:
         if len(word.split('_')) > 1:
@@ -23,15 +25,13 @@ def get_polyseme():
             num_meaning[word] = eng_table[word][0]
     return num_meaning
 
-def build_polyseme_dict(num_meaning, save_dir):
-    # model = 'seg'
-    # dis_path =  os.path.expanduser(f"~/Dir/projects/IPLVE/data/sorted_dispersion_{model}.txt")
-    # dis_sorted = open(dis_path).readlines()
-    # dis_sorted_info = [i.split(': ', 1)[0] for i in dis_sorted]
-
-    dict_path = './data/dictionaries_id2w'
+def build_polyseme_dict(num_meaning, args, seeds):
+    save_dir = args.data.setdefault("polysemy_dict_dir", './data/dictionaries_polysemy')
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+    dict_path = args.data.get("origin_dict_dir", "./data/origin_dict")
     dict_list = os.listdir(dict_path)
-    seeds = [203, 255, 633, 813, 881]
+    # seeds = [203, 255, 633, 813, 881]
     for seed in seeds:
         bin1 = []
         bin2_3 = []
@@ -58,18 +58,6 @@ def build_polyseme_dict(num_meaning, save_dir):
                     else:
                         bins[1].append(dictionaries[idx])
 
-
-                # sorted_index = [dis_sorted_info.index(i) for i in eval_words]
-                # eval_zipped = list(zip(eval_ids_origin, eval_words, sorted_index))
-                # sorted_res = sorted(eval_zipped, key=operator.itemgetter(2))
-                # # eval_zipped.sort(key=dis_sorted_ids.index)
-                # block_size = math.ceil(len(sorted_res) / 3)
-                # id_final, word_final, _ = zip(*sorted_res)
-                # # id_final = list(id_final)
-                # # word_final = list(word_final)
-                # final_list = list(zip(id_final, word_final))
-                # print(final_list[0:2])
-
                 print(len(bin1), len(bin2_3), len(bin_over_3), len(bin_phrase), len(bin_unk))
                 for block_idx, block_name in enumerate(['single', '2to3', 'over3', 'phrase','unk']):
                     with open(f'{save_dir}/eval_{seed}_{block_name}.txt', 'w') as wd:
@@ -77,12 +65,6 @@ def build_polyseme_dict(num_meaning, save_dir):
                             wd.write(pair)
                         wd.close()
 
-if __name__ == "__main__":
-    res = get_polyseme()
-    save_dir = './data/dictionaries_polysemy'
-    if not os.path.exists(save_dir):
-        os.mkdir(save_dir)
-    build_polyseme_dict(res, save_dir)
                 
 
 
