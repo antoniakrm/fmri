@@ -9,6 +9,7 @@ from tqdm import tqdm
 from .utils.encode_util import *
 
 
+# This class inherits from the Dataset class and overrides the __len__ and __getitem__ methods
 class ImageDataset(Dataset):
     def __init__(self, image_dir, image_category_id, extractor, resolution) -> None:
         super(ImageDataset, self).__init__()
@@ -45,6 +46,16 @@ class ImageDataset(Dataset):
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 def segformer_encode(model, dataloader, encoding_path, image_classes_path, args):
+    """
+    Use segformer to get image embeddings.
+    
+    Args:
+      model: the model to use for encoding
+      dataloader: a dataloader object that contains the data to be encoded
+      encoding_path: the path to save the encoding
+      image_classes_path: path to the file containing the image classes
+      args: the arguments passed to the script
+    """
     if os.path.exists(encoding_path):
         print('Loading existing encoding file', encoding_path)
         encoded_image_classes = np.load(encoding_path)

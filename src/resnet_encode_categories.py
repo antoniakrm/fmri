@@ -12,6 +12,14 @@ from .utils.encode_util import *
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 def resnet_encode(args, encodings_path, image_classes_path):
+  """
+  It takes in a list of images, and returns a list of encodings
+  
+  Args:
+    args: the command line arguments
+    encodings_path: The path to the encodings file.
+    image_classes_path: The path to the file containing the image classes.
+  """
   if os.path.exists(encodings_path):
     print('Loading existing encodings file', encodings_path)
     encoded_image_classes = np.load(encodings_path)
@@ -41,6 +49,15 @@ def resnet_encode(args, encodings_path, image_classes_path):
   img2vec = Img2Vec(model=model_name, cuda=torch.cuda.is_available())
 
   def encode_one_class(images_, image_class, args):
+    """
+    It takes a list of images, a label, and returns a list of encoded
+    images
+    
+    Args:
+      images_: a list of images
+      image_class: the class of the image (e.g. 'dog', 'cat', 'car', etc.)
+      args: a dictionary of parameters
+    """
     bs = 200
     batches = [images_[i:i+bs] for i in range(0, len(images_), bs)]
 

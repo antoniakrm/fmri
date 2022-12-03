@@ -3,6 +3,12 @@ import os
 
 
 def get_polyseme(args):
+    """
+    Given a word, return a list of all its polysemes
+    
+    Args:
+      args: a list of arguments
+    """
     polyseme_source_path = args.data.setdefault(
         "poly_src_path", 
         "/image/nlp-datasets/***/cached_requests_omw")
@@ -24,6 +30,14 @@ def get_polyseme(args):
     return num_meaning
 
 def build_polyseme_dict(num_meaning, args, seeds):
+    """
+    Given a list of words, a list of seeds, and a number of meanings, build a dictionary of polysemes
+    
+    Args:
+        num_meaning: the number of meanings you want to generate
+        args: a dictionary of parameters
+        seeds: a list of words that you want to use as the seed words for the polysemes.
+    """
     save_dir = args.data.setdefault("polysemy_dict_dir", './data/dictionaries_polysemy')
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)

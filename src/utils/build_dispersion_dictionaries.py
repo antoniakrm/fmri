@@ -7,6 +7,13 @@ from .get_dispersion import *
 
 
 def get_sorted_dispersion(args):
+    """
+    Calculate the dispersion of all embeddings of words/images and sorted them.
+    save the result to a file.
+    
+    Args:
+      args: includes the directories of embeddings and saving path.
+    """
     root_path = args.data.per_object_embs_path
     # root_path = os.path.expanduser("~/Dir/datasets/dispersions/bert_words_embs")
     # root_path = os.path.expanduser("~/Dir/datasets/dispersions/gpt2_words_embs")
@@ -38,6 +45,13 @@ def get_sorted_dispersion(args):
         ssw.close()
 
 def build_dis_dict(args, seeds):
+    """
+    create low, medium, high three evaluation dictionaries per seed based on the dispersion.
+    
+    Args:
+      args: includes the sorted dispersion file, the eval dictionary path
+      seeds: a list of seed words
+    """
     get_sorted_dispersion(args)
 
     dis_path = args.data.get("sorted_dispersion_file", f"./data/sorted_dispersion_{args.model.model_name}.txt")

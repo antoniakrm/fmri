@@ -40,6 +40,13 @@ def check_symbols(s):
     return True
 
 def crawl_sentences(word, model):
+    """
+    Download sentences related to the word from wiki
+    
+    Args:
+      word: the word you want to crawl
+      model: the model you want to use to crawl the sentences.
+    """
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 SE 2.X MetaSr 1.0'}
 
     sentence_list = []
@@ -73,6 +80,15 @@ def crawl_sentences(word, model):
     return sentence_list
 
 def create_sentences_file(wordslist, index, part, download_path):
+    """
+    Create the file saving part of sentences lists. Using it to active the multi-processing to speed up.
+    
+    Args:
+      wordslist: a list of words
+      index: the index of the word in the wordslist
+      part: the part of the corpus you want to download (1-5)
+      download_path: the path to the directory where the downloaded files are stored
+    """
     with open(wordslist, 'r') as words_read:
         words = words_read.readlines()[index:index+2400]
         examples = []
@@ -97,6 +113,14 @@ def create_sentences_file(wordslist, index, part, download_path):
                 sentences_write.close()
 
 def sum_files(root_path, sentences_path, args):
+    """
+    Combine all the downloaded sentences files.
+    
+    Args:
+      root_path: the path to the root directory of the project
+      sentences_path: the path to the sentences file
+      args: a list of arguments that you can pass to the script.
+    """
     files = os.listdir(root_path)
     words_repeated = []
     sentences = []
@@ -124,6 +148,12 @@ def sum_files(root_path, sentences_path, args):
 
 
 def sentences_download(args):
+    """
+    It downloads the sentences from the internet through multi-processing.
+    
+    Args:
+      args: a list of arguments passed to the function.
+    """
     wordlist = args.data.wordlist_path
     sentences_path = args.data.sentences_path
     download_path = args.data.download_path

@@ -5,6 +5,12 @@ import numpy as np
 
 
 def get_frequency_rank(args):
+    """
+    Get the rank of frequency
+    
+    Args:
+      args: a list of arguments
+    """
     word2freq_path = args.data.setdefault(
         "freq_src_path", 
         "/image/nlp-datasets/***/freq_wordlist_nltk")
@@ -29,6 +35,14 @@ def get_frequency_rank(args):
     return eval_word_rank
 
 def build_frequency_dict(eval_word_rank, args, seeds):
+    """
+    Create various evaluation dictionaries per seed based on frequency.
+    
+    Args:
+      eval_word_rank: a dictionary mapping words to their ranks in the evaluation set
+      args: a dictionary of parameters
+      seeds: a list of words that are used to seed the word2vec model
+    """
     save_dir = args.data.setdefault("freq_dict_dir", './data/dictionaries_freq')
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)

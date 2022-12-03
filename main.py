@@ -30,6 +30,14 @@ def enforce_reproducibility(seed=42):
 
 
 def shuffle_dictionary(args, seeds):
+    """
+    It takes a dictionary of arguments and a list of seeds, and returns a list of dictionaries of
+    arguments, where each dictionary is a shuffled version of the original dictionary
+    
+    Args:
+      args: a dictionary of arguments
+      seeds: a list of seeds to use for shuffling
+    """
     ids_words_path = args.data.image_id2words
     dictionary_dir = args.data.setdefault("origin_dict_dir", "./data/origin_dict")
 
@@ -41,6 +49,12 @@ def shuffle_dictionary(args, seeds):
         dico_write(write_dir=dictionary_dir, dicos=[train_dico, eval_dico, test_dico], seed=seed)
 
 def build_image_classes_maps(args):
+    """
+    build a dictionary of image ids and their corresponding classes' names which is in the wordlist.
+    
+    Args:
+      args: config parameters
+    """
     wordlist_path = args.data.get("wordlist_path", "./data/ordered_wordlist.txt")
     image_id_maps_path = args.data.get("image_maps",'./data/imagenet21k_ids_names.txt')
     

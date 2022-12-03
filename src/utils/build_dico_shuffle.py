@@ -4,6 +4,15 @@ import random
 
 
 def dico_build(ids_words_path, seed, id_list=None, name_list=None):
+    """
+    It builds a dictionary from a list of words
+    
+    Args:
+      ids_words_path: path to the file containing the ids and words
+      seed: the seed for the random number generator
+      id_list: list of ids to be included in the dictionary
+      name_list: list of names of the dictionaries to be built
+    """
     pairs = open(ids_words_path).readlines()
     id_all = [i.strip().split(': ')[0] for i in pairs]
     name_all = [i.strip().lower().split(': ')[1] for i in pairs]
