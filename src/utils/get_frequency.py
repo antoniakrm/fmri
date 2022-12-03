@@ -7,7 +7,7 @@ import numpy as np
 def get_frequency_rank(args):
     word2freq_path = args.data.setdefault(
         "freq_src_path", 
-        "/image/nlp-datasets/yova/freq_wordlist_nltk")
+        "/image/nlp-datasets/***/freq_wordlist_nltk")
     word2freq = json.load(open(word2freq_path))
     words_list = open(
         args.data.get(

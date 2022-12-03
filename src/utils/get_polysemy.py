@@ -3,11 +3,9 @@ import os
 
 
 def get_polyseme(args):
-    # cache = json.load(open('/image/nlp-datasets/yova/cached_requests_omw'))
-    # words_list = open('./data/wordlist_ordered.txt').read().strip().lower().split('\n')
     polyseme_source_path = args.data.setdefault(
         "poly_src_path", 
-        "/image/nlp-datasets/yova/cached_requests_omw")
+        "/image/nlp-datasets/***/cached_requests_omw")
     cache = json.load(open(polyseme_source_path))
     words_list = open(
         args.data.get(

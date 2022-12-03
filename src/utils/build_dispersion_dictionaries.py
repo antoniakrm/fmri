@@ -1,9 +1,10 @@
 import math
+import multiprocessing as mp
 import operator
 import os
-import multiprocessing as mp
 
 from .get_dispersion import *
+
 
 def get_sorted_dispersion(args):
     root_path = args.data.per_object_embs_path
