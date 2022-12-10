@@ -222,16 +222,16 @@ if __name__ == "__main__":
 
     main_function(config, logger)
 
-    # seeds = np.random.randint(0, 1000, size=5)
+    seeds = np.random.randint(0, 1000, size=5)
 
-    # # build dictionary image to word
-    # if config.model.model_type == "VM":
-    #     shuffle_dictionary(config, seeds)
+    # build dictionary image to word
+    if config.model.model_type == "VM":
+        shuffle_dictionary(config, seeds)
 
-    # # For dispersion, polysemy, frequency experiments
-    # build_dis_dict(config, seeds)
-    # if config.model.model_type == "VM":
-    #     build_polyseme_dict(get_polyseme(config), config, seeds)
-    #     build_frequency_dict(get_frequency_rank(config), config, seeds)
+    # For dispersion, polysemy, frequency experiments
+    build_dis_dict(config, seeds)
+    if config.model.model_type == "VM":
+        build_polyseme_dict(get_polyseme(config), config, seeds)
+        build_frequency_dict(get_frequency_rank(config), config, seeds)
     
-    # io_util.save_config(config, os.path.join(exp_dir, 'config.yaml'))
+    io_util.save_config(config, os.path.join(exp_dir, 'config.yaml'))
