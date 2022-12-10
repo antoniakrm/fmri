@@ -5,7 +5,7 @@ This repository contains code for exploring isomorphism between pre-trained lang
 Before running the code, please download fasttext identification [model](https://fasttext.cc/docs/en/language-identification.html)
 
 File path | Description
-'''
+```
 IPLVEs
 ├── configs
 │   ├── bert_config.yaml
@@ -41,7 +41,7 @@ IPLVEs
         ├── __init__.py
         ├── io_util.py
         └── sentences_downloader.py
-'''
+```
 
 ## Get word embeddings
 
