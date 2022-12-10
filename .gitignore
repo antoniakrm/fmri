@@ -131,9 +131,11 @@ dmypy.json
 # project's files
 .vscode/
 wandb/
-pretrained/
+/pretrained/
 *.out
 .history/
 *.npy
 *.xlsx
+/data/
+*_enc/
 
