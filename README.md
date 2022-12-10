@@ -7,31 +7,31 @@ Before running the code, please download fasttext identification [model](https:/
 File path | Description
 ```
 IPLVEs
-├── configs
+├──📂 configs
 │   ├── bert_config.yaml
 │   ├── gpt2_config.yaml
 │   ├── opt_config.yaml
 │   ├── resnet_config.yaml
 │   └── segformer_config.yaml
-├── data
+├──📂 data
 │   └── wordlist.txt
 ├── env.yaml
 ├── __init__.py
 ├── LICENSE
 ├── main.py
-├── MUSE
+├──📂 MUSE
 │   └── ...
-├── pretrained
+├──📂 pretrained
 │   └── lid.176.bin
 ├── README.md
-└── src
+└──📂 src
     ├── bert_word_emb.py
     ├── gpt2_word_emb.py
     ├── __init__.py
     ├── opt_word_emb.py
     ├── resnet_encode_categories.py
     ├── Segformer_encode.py
-    └── utils
+    └──📂 utils
         ├── build_dico_shuffle.py
         ├── build_dispersion_dictionaries.py
         ├── encode_util.py
